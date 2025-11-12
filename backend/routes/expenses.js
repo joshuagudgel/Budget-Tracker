@@ -1,0 +1,264 @@
+const express = require('express');
+const router = express.Router();
+const Expense = require('../models/Expense');
+const multer = require('multer');
+const fs = require('fs').promises;
+const path = require('path');
+
+const upload = multer({
+  dest: 'uploads/',
+  fileFilter: (req, file, cb) => {
+    if (file.mimetype === 'text/plain') {
+      cb(null, true);
+    } else {
+      cb(new Error('Only text files are allowed'), false);
+    }
+  },
+  limits: {fileSize: 5 * 1024 * 1024} // 5 MB
+});
+
+// CRUD API routes for Expense model ------
+// Create
+router.post('/', async (req, res) => {
+  try {
+    const expense = new Expense(req.body);
+    const savedExpense = await expense.save();
+    res.status(201).json(savedExpense);
+  }
+  catch (error) {
+    if(error.name === 'ValidationError') {
+    const errors = Object.values(error.errors).map(err => err.message);
+    return res.status(400).json({ 
+      error: 'Validation failed',
+      message: errors 
+    });
+  } else {
+      return res.status(500).json({ error: 'Internal Server Error' });
+    }
+  }
+});
+
+// Get all
+router.get('/', async (req, res) => {
+  try {
+    const expenses = await Expense.find();
+    return res.status(200).json(expenses);
+  } catch (error) {
+    return res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+
+// Get by ID
+router.get('/:id', async (req, res) => {
+  try {
+    const expense = await Expense.findById(req.params.id);
+      if (!expense) {
+      return res.status(404).json({ 
+        error: 'Expense not found',
+        message: `No expense found with ID: ${req.params.id}`
+      });
+    }
+
+    return res.status(200).json(expense);
+  } catch (error) {
+      if (error.name === 'CastError') {
+      return res.status(400).json({ 
+        error: 'Invalid ID format',
+        message: 'Please provide a valid expense ID'
+      });
+    }
+
+    return res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+
+// Update by ID
+router.put('/:id', async (req, res) => {
+  console.log("Update request received for ID:", req.params.id);
+  try{
+    
+    const updatedExpense = await Expense.findByIdAndUpdate(req.params.id, req.body, { new: true, runValidators: true });
+    console.log(updatedExpense);
+
+    if ( !updatedExpense ) {
+      return res.status(404).json({
+        error: "Expense not found",
+        message: `No expense found with ID: ${req.params.id}`
+      });
+    }
+
+    res.status(200).json({
+      message: 'Expense updated successfully',
+      expense: updatedExpense
+    });
+  } catch (error) {
+    
+    
+    if(error.name === 'ValidationError') {
+      const errors = Object.values(error.errors).map(err => err.message);
+      return res.status(400).json({
+        error: 'Validation failed',
+        message: errors
+      });
+    }
+    if( error.name === 'CastError') {
+      return res.status(400).json({ 
+        error: 'Invalid ID format',
+        message: 'Please provide a valid expense ID'
+      });
+    }
+
+    return res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+
+// Delete by ID
+router.delete('/:id', async (req, res) => {
+  console.log(`Delete by ID Request: ${req.params.id}`);
+  try {
+    const deletedExpense = await Expense.findByIdAndDelete(req.params.id);
+    // error if entry does not exist
+    if( !deletedExpense ) {
+      return res.status(404).json({
+        message: `No expense found with ID: ${req.params.id}`,
+        error: 'Expense not found'
+      });
+    }
+
+    return res.status(200).json({
+      message: 'Expense deleted successfully',
+      expense: deletedExpense
+    });
+  } catch (error) {
+    // catch validation errors
+    if( error.name === 'ValidationError' ){
+      const errors = Object.values(error.errors).map(err => err.message);
+      return res.status(400).json({
+        error: 'Validation failed',
+        message: errors
+      });
+    }
+    return res.status(500).json({ error: 'Internal Server Error'});
+  }
+});
+
+// ---------------------------------------
+
+// Upload expenses via text/plain file
+router.post('/upload', upload.single('file'), async (req, res) => {
+  try{
+    if(!req.file) {
+      return res.status(400).json({
+        error: 'No file uploaded',
+        message: 'Please upload a text file'
+      });
+    }
+
+    const filePath = path.resolve(req.file.path);
+    const fileContent = await fs.readFile(filePath, 'utf-8');
+
+    // parse lines
+    const lines = fileContent.split('\n');
+    const expenses = [];
+    const parseErrors = [];
+
+    for (let i = 0; i < lines.length; i++) {
+      const line = lines[i].trim();
+      if (!line) continue;
+
+      try {
+        const expense = parseExpenseLine(line);
+        expenses.push(expense);
+      } catch (lineError) {
+        parseErrors.push(`Line ${i + 1}: '${line}' Error: ${lineError.message}`);
+      }
+    }
+
+    // save valid expenses
+    const savedExpenses = [];
+    const saveErrors = [];
+
+    for (const expenseData of expenses) {
+      try {
+        const expense = new Expense(expenseData);
+        const savedExpense = await expense.save();
+        savedExpenses.push(savedExpense);
+      } catch (saveError) {
+        saveErrors.push(`Expense Data: ${JSON.stringify(expenseData)} Error: ${saveError.message}`);
+      }
+    }
+
+    // cleanup uploaded file
+    await fs.unlink(filePath);
+
+    return res.status(201).json({
+      message: 'File processed',
+      summary: {
+        totalLines: lines.length,
+        successfullyParsed: expenses.length,
+        savedToDatabase: savedExpenses.length,
+        parseErrors: parseErrors.length,
+        saveErrors: saveErrors.length
+      },
+      savedExpenses,
+      errors: {
+        parseErrors: parseErrors,
+        saveErrors: saveErrors
+      }
+    });
+
+  } catch (error) {
+    if (req.file) {
+      try {
+        await fs.unlink(req.file.path);
+      } catch (unlinkError) {
+        console.error('Error cleaning up file:', unlinkError);
+      }
+    }
+    
+    return res.status(500).json({
+      error: 'Internal server error',
+      message: 'Failed to process file'
+    });
+  }
+});
+
+// helper function to parse a line into an expense object
+function parseExpenseLine(line) {
+  // split line by spaces
+  const parts = line.trim().split(/\s+/);
+  if (parts.length < 3) {
+    throw new Error('Line does not contain enough parts');
+  }
+
+  let date = parts[0];
+  let amountStr = parts[parts.length -1];
+  let remainder = parts.slice(1, parts.length -1).join(' ');
+
+  // validate and parse amount
+  const amountNum = parseFloat(amountStr);
+  if (isNaN(amountNum)) {
+    throw new Error('Invalid amount format');
+  }
+  
+  // reformat date to use yyyy-mm-dd
+  if(date.length < 8) {
+    date = `2025-${date}`;
+  }
+  
+  const dateObj = new Date(date);
+  if (isNaN(dateObj.getTime())) {
+    throw new Error(`Invalid date: ${date}`);
+  }
+
+  return {
+    date: dateObj,
+    description: remainder,
+    amount: amountNum,
+    category: 'other',
+    paymentMethod: 'credit_card'
+  }
+}
+
+module.exports = router;
+module.exports.parseExpenseLine = parseExpenseLine;
