@@ -1,0 +1,27 @@
+# Dependencies
+node_modules
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Development files
+.git
+.gitignore
+README.md
+Dockerfile
+.dockerignore
+
+# Environment variables
+.env
+
+# Build artifacts and cache
+build
+coverage
+.nyc_output
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE files
+.vscode

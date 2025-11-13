@@ -54,7 +54,7 @@ jspm_packages/
 # TypeScript cache (if using TypeScript)
 *.tsbuildinfo
 
-# Uploads folder contents (keep folder structure)
+# Uploads folder contents
 uploads/*
 !uploads/.gitkeep
 
@@ -84,9 +84,6 @@ Thumbs.db
 
 # IDE files
 .vscode/
-.idea/
-*.sublime-project
-*.sublime-workspace
 
 # SSL certificates
 *.pem

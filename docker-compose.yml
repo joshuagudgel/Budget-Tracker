@@ -1,4 +1,14 @@
 services:
+  mongo:
+    image: mongo:7
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+    environment:
+      - MONGO_INITDB_DATABASE=budget-tracker
+    command: ["mongod", "--quiet"]
+
   backend:
     build: ./backend
     ports:
@@ -10,18 +20,18 @@ services:
     environment:
       - NODE_ENV=development
       - MONGODB_URI=mongodb://mongo:27017/budget-tracker
-    depends_on:
-      - mongo
 
-  mongo:
-    image: mongo:7
-    ports:
-      - "27017:27017"
-    volumes:
-      - mongo_data:/data/db
+  frontend:
+    build: ./frontend
+    ports: 
+      - "3001:3000"
     environment:
-      - MONGO_INITDB_DATABASE=budget-tracker
-    command: ["mongod", "--quiet"]
+      - NODE_ENV=development
+      - REACT_APP_API_URL=http://localhost:3000
+    depends_on:
+      - backend
+
+
     
 volumes:
   mongo_data:
