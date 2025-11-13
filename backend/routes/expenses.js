@@ -163,6 +163,9 @@ router.post('/upload', upload.single('file'), async (req, res) => {
     const expenses = [];
     const parseErrors = [];
     let bank = '';
+
+    // bank1 has "Transaction Date" as first column header
+    // bank2 has no header row
     if (lines.length > 0 && lines[0] && lines[0][0] === 'Transaction Date') {
       bank = 'bank1';
     } else {
@@ -230,7 +233,7 @@ router.post('/upload', upload.single('file'), async (req, res) => {
   }
 });
 
-// helper function to parse a line into an expense object and use different columns depending on bank
+// Split an expense array into appropriate fields depending on bank
 // input: line - array of strings representing columns
 // return: expense object
 function parseExpenseLine(line, bank) {
@@ -239,17 +242,10 @@ function parseExpenseLine(line, bank) {
   let amountStr = bank === 'bank1' ? line[5] : line[1];
   let description = bank === 'bank1' ? line[2] : line[4];
 
-  console.log(`Parsing line for bank ${bank}: Date: ${date}, Amount: ${amountStr}, Description: ${description}`);
-
   // validate and parse amount
   const amountNum = (-1)*parseFloat(amountStr);
   if (isNaN(amountNum)) {
     throw new Error('Invalid amount format');
-  }
-  
-  // reformat date to use yyyy-mm-dd
-  if(date.length < 8) {
-    date = `2025-${date}`;
   }
   
   const dateObj = new Date(date);
@@ -266,7 +262,7 @@ function parseExpenseLine(line, bank) {
   }
 }
 
-// helper to convert csv string to 2 dimensional array
+// Convert csv string to 2 dimensional array (grid format)
 // each row is an array of column values
 function csvStringToArray (strData) {
     const objPattern = new RegExp(("(\\,|\\r?\\n|\\r|^)(?:\"([^\"]*(?:\"\"[^\"]*)*)\"|([^\\,\\r\\n]*))"),"gi");
