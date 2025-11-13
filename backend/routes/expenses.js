@@ -2,16 +2,17 @@ const express = require('express');
 const router = express.Router();
 const Expense = require('../models/Expense');
 const multer = require('multer');
+const csvParser = require('csv-parser');
 const fs = require('fs').promises;
 const path = require('path');
 
 const upload = multer({
   dest: 'uploads/',
   fileFilter: (req, file, cb) => {
-    if (file.mimetype === 'text/plain') {
+    if (file.mimetype === 'text/csv') {
       cb(null, true);
     } else {
-      cb(new Error('Only text files are allowed'), false);
+      cb(new Error('Only CSV files are allowed'), false);
     }
   },
   limits: {fileSize: 5 * 1024 * 1024} // 5 MB
@@ -144,30 +145,36 @@ router.delete('/:id', async (req, res) => {
 
 // ---------------------------------------
 
-// Upload expenses via text/plain file
+// Upload expenses via csv/plain file
 router.post('/upload', upload.single('file'), async (req, res) => {
   try{
     if(!req.file) {
       return res.status(400).json({
         error: 'No file uploaded',
-        message: 'Please upload a text file'
+        message: 'Please upload a csv file'
       });
     }
 
     const filePath = path.resolve(req.file.path);
     const fileContent = await fs.readFile(filePath, 'utf-8');
 
-    // parse lines
-    const lines = fileContent.split('\n');
+    // convert csv to array of lines
+    const lines = csvStringToArray(fileContent);
     const expenses = [];
     const parseErrors = [];
+    let bank = '';
+    if (lines.length > 0 && lines[0] && lines[0][0] === 'Transaction Date') {
+      bank = 'bank1';
+    } else {
+      bank = 'bank2';
+    }
 
     for (let i = 0; i < lines.length; i++) {
-      const line = lines[i].trim();
+      const line = lines[i];
       if (!line) continue;
 
       try {
-        const expense = parseExpenseLine(line);
+        const expense = parseExpenseLine(line, bank);
         expenses.push(expense);
       } catch (lineError) {
         parseErrors.push(`Line ${i + 1}: '${line}' Error: ${lineError.message}`);
@@ -223,20 +230,19 @@ router.post('/upload', upload.single('file'), async (req, res) => {
   }
 });
 
-// helper function to parse a line into an expense object
-function parseExpenseLine(line) {
-  // split line by spaces
-  const parts = line.trim().split(/\s+/);
-  if (parts.length < 3) {
-    throw new Error('Line does not contain enough parts');
-  }
+// helper function to parse a line into an expense object and use different columns depending on bank
+// input: line - array of strings representing columns
+// return: expense object
+function parseExpenseLine(line, bank) {
 
-  let date = parts[0];
-  let amountStr = parts[parts.length -1];
-  let remainder = parts.slice(1, parts.length -1).join(' ');
+  let date = line[0];
+  let amountStr = bank === 'bank1' ? line[5] : line[1];
+  let description = bank === 'bank1' ? line[2] : line[4];
+
+  console.log(`Parsing line for bank ${bank}: Date: ${date}, Amount: ${amountStr}, Description: ${description}`);
 
   // validate and parse amount
-  const amountNum = parseFloat(amountStr);
+  const amountNum = (-1)*parseFloat(amountStr);
   if (isNaN(amountNum)) {
     throw new Error('Invalid amount format');
   }
@@ -253,11 +259,25 @@ function parseExpenseLine(line) {
 
   return {
     date: dateObj,
-    description: remainder,
+    description: description,
     amount: amountNum,
     category: 'other',
     paymentMethod: 'credit_card'
   }
+}
+
+// helper to convert csv string to 2 dimensional array
+// each row is an array of column values
+function csvStringToArray (strData) {
+    const objPattern = new RegExp(("(\\,|\\r?\\n|\\r|^)(?:\"([^\"]*(?:\"\"[^\"]*)*)\"|([^\\,\\r\\n]*))"),"gi");
+    let arrMatches = null, arrData = [[]];
+    while (arrMatches = objPattern.exec(strData)){
+        if (arrMatches[1].length && arrMatches[1] !== ",")arrData.push([]);
+        arrData[arrData.length - 1].push(arrMatches[2] ? 
+            arrMatches[2].replace(new RegExp( "\"\"", "g" ), "\"") :
+            arrMatches[3]);
+    }
+    return arrData;
 }
 
 module.exports = router;
