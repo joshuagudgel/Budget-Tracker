@@ -1,0 +1,23 @@
+.navBar {
+  width: 100%;
+  background-color: #282c34;
+  border-bottom: 2px solid white;
+  padding: 20px 0;
+}
+
+.navBarContent {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 20px;
+}
+
+.navItems {
+  display:flex;
+  gap: 20px;
+}
+
+.navItem {
+  cursor:pointer;
+  padding: 10px 15px;
+}

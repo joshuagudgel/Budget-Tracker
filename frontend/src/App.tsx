@@ -1,12 +1,22 @@
-import React from "react";
+import React, { useState } from "react";
 import styles from "./App.module.css";
 import ExpenseList from "./components/ExpenseList";
+import NavBar from "./components/NavBar";
 
 function App() {
+  const [currentView, setCurrentView] = useState<string>("Expenses");
+
+  const handleViewChange = (nav: string) => {
+    setCurrentView(nav);
+  };
+
   return (
-    <div className={styles.App}>
-      <h1>Budget Tracker</h1>
-      <ExpenseList />
+    <div className={styles.app}>
+      <NavBar onNavigationChange={handleViewChange} />
+      <main className={styles.mainContent}>
+        {currentView === "Expenses" && <ExpenseList />}
+        {currentView === "Categories" && <div>Categories View</div>}
+      </main>
     </div>
   );
 }
