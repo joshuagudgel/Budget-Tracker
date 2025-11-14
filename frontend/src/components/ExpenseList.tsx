@@ -32,16 +32,31 @@ const ExpenseList: React.FC<ExpenseListProps> = () => {
 
   return (
     <div className="expense-list">
-      <h2>Expenses</h2>
-      <ul>
-        {expenses.map((expense) => (
-          <li key={expense.id}>
-            Date: {expense.date}
-            Amount: ${expense.amount}
-            Description: {expense.description};
-          </li>
-        ))}
-      </ul>
+      <h2>Expenses!</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>Amount</th>
+            <th>Description</th>
+          </tr>
+        </thead>
+        <tbody>
+          {expenses.length === 0 ? (
+            <tr>
+              <td colSpan={3}>No expenses found</td>
+            </tr>
+          ) : (
+            expenses.map((expense) => (
+              <tr key={expense.id}>
+                <td>{expense.date}</td>
+                <td>{expense.amount}</td>
+                <td>{expense.description}</td>
+              </tr>
+            ))
+          )}
+        </tbody>
+      </table>
     </div>
   );
 };
