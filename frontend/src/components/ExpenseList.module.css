@@ -1,13 +1,19 @@
 .expenseList {
-  margin-top: 20px;
+  padding: 20px;
   width: 80%;
   background-color:brown;
+  font-size: calc(10px + 1vmin);
+}
+
+.expenseList h2 {
+  text-align: center;
 }
 
 /* Date Column */
 .expenseList th:nth-child(1),
 .expenseList td:nth-child(1) {
   width: 25%;
+  text-align: left;
 }
 
 /* Amount Column */
@@ -21,4 +27,5 @@
 .expenseList th:nth-child(3),
 .expenseList td:nth-child(3) {
   width: 50%;
+  text-align: left;
 }
