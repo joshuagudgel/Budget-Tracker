@@ -1,5 +1,4 @@
 .App {
-  text-align: center;
   background-color: #13151a;
   color: white;
 }
@@ -12,4 +11,3 @@
   justify-content: center;
   font-size: calc(10px + 1vmin);
 }
-

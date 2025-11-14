@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Expense, expenseService } from "../services/api";
+import styles from "./ExpenseList.module.css";
 
 interface ExpenseListProps {
   expenses?: Expense[];
@@ -9,6 +10,7 @@ const ExpenseList: React.FC<ExpenseListProps> = () => {
   const [expenses, setExpenses] = useState<Expense[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+  const expenseHeaders = ["Date", "Amount", "Description"];
 
   useEffect(() => {
     const fetchExpenses = async () => {
@@ -31,14 +33,14 @@ const ExpenseList: React.FC<ExpenseListProps> = () => {
   if (error) return <div>{error}</div>;
 
   return (
-    <div className="expense-list">
-      <h2>Expenses!</h2>
+    <div className={styles.expenseList}>
+      <h2>Expenses</h2>
       <table>
         <thead>
           <tr>
-            <th>Date</th>
-            <th>Amount</th>
-            <th>Description</th>
+            {expenseHeaders.map((header) => (
+              <th key={header.toLowerCase()}>{header}</th>
+            ))}
           </tr>
         </thead>
         <tbody>
@@ -49,8 +51,8 @@ const ExpenseList: React.FC<ExpenseListProps> = () => {
           ) : (
             expenses.map((expense) => (
               <tr key={expense.id}>
-                <td>{expense.date}</td>
-                <td>{expense.amount}</td>
+                <td>{expense.date.split("T")[0]}</td>
+                <td>${expense.amount}</td>
                 <td>{expense.description}</td>
               </tr>
             ))

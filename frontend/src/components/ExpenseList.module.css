@@ -1,0 +1,24 @@
+.expenseList {
+  margin-top: 20px;
+  width: 80%;
+  background-color:brown;
+}
+
+/* Date Column */
+.expenseList th:nth-child(1),
+.expenseList td:nth-child(1) {
+  width: 25%;
+}
+
+/* Amount Column */
+.expenseList th:nth-child(2),
+.expenseList td:nth-child(2) {
+  width: 25%;
+  text-align: left;
+}
+
+/* Description Column */
+.expenseList th:nth-child(3),
+.expenseList td:nth-child(3) {
+  width: 50%;
+}
