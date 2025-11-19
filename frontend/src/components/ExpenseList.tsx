@@ -8,9 +8,25 @@ interface ExpenseListProps {
 
 const ExpenseList: React.FC<ExpenseListProps> = () => {
   const [expenses, setExpenses] = useState<Expense[]>([]);
+  const [changedExpenseIds, setChangedExpenseIds] = useState<string[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const expenseHeaders = ["Date", "Amount", "Description"];
+
+  const handleExpenseChange = (
+    expenseId: string,
+    field: string,
+    value: any
+  ) => {
+    setExpenses((prevExpenses) =>
+      prevExpenses.map((expense) =>
+        expense.id === expenseId ? { ...expense, [field]: value } : expense
+      )
+    );
+    setChangedExpenseIds((prevIds) =>
+      prevIds.includes(expenseId) ? prevIds : [...prevIds, expenseId]
+    );
+  };
 
   useEffect(() => {
     const fetchExpenses = async () => {

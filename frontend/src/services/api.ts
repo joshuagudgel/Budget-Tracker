@@ -1,7 +1,7 @@
 const API_BASE_URL = 'http://localhost:3000/api';
 
 export interface Expense {
-  id: number;
+  id: string;
   amount: number;
   description: string;
   date: string;
