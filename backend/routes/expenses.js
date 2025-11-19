@@ -43,7 +43,18 @@ router.post('/', async (req, res) => {
 router.get('/', async (req, res) => {
   try {
     const expenses = await Expense.find();
-    return res.status(200).json(expenses);
+
+    const transformedExpenses = expenses.map(expense => ({
+      id: expense._id,
+      amount: expense.amount,
+      description: expense.description,
+      category: expense.category,
+      date: expense.date,
+      paymentMethod: expense.paymentMethod,
+      tags: expense.tags,
+    }));
+
+    return res.status(200).json(transformedExpenses);
   } catch (error) {
     return res.status(500).json({ error: 'Internal Server Error' });
   }

@@ -22,5 +22,19 @@ export const expenseService = {
       console.error('Error fetching expenses:', error);
       throw error;
     }
+  },
+  updateExpenses: async (expenses: Expense[]): Promise<void> => {
+    for (const expense of expenses) {
+      try {
+        await fetch(`${API_BASE_URL}/expenses/${expense.id}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(expense)
+        });
+      } catch (error) {
+        console.error(`Error updating expense with id ${expense.id}: `, error);
+      }
+    }
+  
   }
 };

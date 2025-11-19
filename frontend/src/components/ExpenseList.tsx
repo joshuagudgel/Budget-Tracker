@@ -28,6 +28,19 @@ const ExpenseList: React.FC<ExpenseListProps> = () => {
     );
   };
 
+  const handleSaveClick = async () => {
+    // collect changed expenses
+    const changedExpenses = expenses.filter((expense) =>
+      changedExpenseIds.includes(expense.id)
+    );
+    // call API for each expense that was changed
+    await expenseService.updateExpenses(changedExpenses);
+
+    // clear changedExpenseIds after successful save
+    setChangedExpenseIds([]);
+    console.log("Successfully saved changes");
+  };
+
   useEffect(() => {
     const fetchExpenses = async () => {
       try {
@@ -65,16 +78,29 @@ const ExpenseList: React.FC<ExpenseListProps> = () => {
               <td colSpan={3}>No expenses found</td>
             </tr>
           ) : (
-            expenses.map((expense) => (
+            expenses.map((expense, index) => (
               <tr key={expense.id}>
                 <td>{expense.date.split("T")[0]}</td>
                 <td>${expense.amount}</td>
-                <td>{expense.description}</td>
+                <td>
+                  <input
+                    type="text"
+                    value={expense.description}
+                    onChange={(e) =>
+                      handleExpenseChange(
+                        expense.id,
+                        "description",
+                        e.target.value
+                      )
+                    }
+                  />
+                </td>
               </tr>
             ))
           )}
         </tbody>
       </table>
+      <button onClick={handleSaveClick}>Save</button>
     </div>
   );
 };
