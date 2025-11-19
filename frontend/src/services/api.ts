@@ -5,6 +5,7 @@ export interface Expense {
   amount: number;
   description: string;
   date: string;
+  category: string;
 }
 
 export const expenseService = {

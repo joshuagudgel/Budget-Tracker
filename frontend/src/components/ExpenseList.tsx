@@ -11,7 +11,15 @@ const ExpenseList: React.FC<ExpenseListProps> = () => {
   const [changedExpenseIds, setChangedExpenseIds] = useState<string[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
-  const expenseHeaders = ["Date", "Amount", "Description"];
+  const expenseHeaders = ["Date", "Amount", "Description", "Category"];
+  const categories = [
+    "food",
+    "transport",
+    "utilities",
+    "entertainment",
+    "health",
+    "other",
+  ];
 
   const handleExpenseChange = (
     expenseId: string,
@@ -94,6 +102,25 @@ const ExpenseList: React.FC<ExpenseListProps> = () => {
                       )
                     }
                   />
+                </td>
+                <td>
+                  <select
+                    value={expense.category || ""}
+                    onChange={(e) =>
+                      handleExpenseChange(
+                        expense.id,
+                        "category",
+                        e.target.value
+                      )
+                    }
+                  >
+                    <option value="">Select Category</option>
+                    {categories.map((category) => (
+                      <option key={category} value={category}>
+                        {category}
+                      </option>
+                    ))}
+                  </select>
                 </td>
               </tr>
             ))
