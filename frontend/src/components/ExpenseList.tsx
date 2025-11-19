@@ -86,10 +86,10 @@ const ExpenseList: React.FC<ExpenseListProps> = () => {
               <td colSpan={3}>No expenses found</td>
             </tr>
           ) : (
-            expenses.map((expense, index) => (
+            expenses.map((expense) => (
               <tr key={expense.id}>
                 <td>{expense.date.split("T")[0]}</td>
-                <td>${expense.amount}</td>
+                <td>${expense.amount.toFixed(2)}</td>
                 <td>
                   <input
                     type="text"
