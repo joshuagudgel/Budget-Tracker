@@ -21,3 +21,8 @@
   cursor:pointer;
   padding: 10px 15px;
 }
+
+.navItemActive {
+  background-color: #61dafb;
+  border-radius: 5px;
+}

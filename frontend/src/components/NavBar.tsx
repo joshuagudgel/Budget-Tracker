@@ -2,31 +2,29 @@ import React, { useState } from "react";
 import styles from "./NavBar.module.css";
 
 interface NavBarProps {
-  onNavigationChange?: (nav: string) => void;
+  currentView: string;
+  onNavigationChange: (nav: string) => void;
 }
 
-const NavBar: React.FC<NavBarProps> = ({ onNavigationChange }) => {
-  const [navigation, setNavigation] = useState<string>("Expenses");
-
-  const handleNavClick = (nav: string) => {
-    setNavigation(nav);
-    onNavigationChange?.(nav);
-  };
-
+const NavBar: React.FC<NavBarProps> = ({ currentView, onNavigationChange }) => {
   return (
     <nav className={styles.navBar}>
       <div className={styles.navBarContent}>
         <h1>Budget Tracker</h1>
         <div className={styles.navItems}>
           <p
-            className={styles.navItem}
-            onClick={() => handleNavClick("Expenses")}
+            className={`${styles.navItem} ${
+              currentView === "Expenses" ? styles.navItemActive : ""
+            }`}
+            onClick={() => onNavigationChange("Expenses")}
           >
             Expenses
           </p>
           <p
-            className={styles.navItem}
-            onClick={() => handleNavClick("Categories")}
+            className={`${styles.navItem} ${
+              currentView === "Categories" ? styles.navItemActive : ""
+            }`}
+            onClick={() => onNavigationChange("Categories")}
           >
             Categories
           </p>

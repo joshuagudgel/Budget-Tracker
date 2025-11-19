@@ -12,7 +12,7 @@ function App() {
 
   return (
     <div className={styles.app}>
-      <NavBar onNavigationChange={handleViewChange} />
+      <NavBar currentView={currentView} onNavigationChange={handleViewChange} />
       <main className={styles.mainContent}>
         {currentView === "Expenses" && <ExpenseList />}
         {currentView === "Categories" && <div>Categories View</div>}
