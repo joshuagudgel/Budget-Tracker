@@ -39,3 +39,30 @@ export const expenseService = {
   
   }
 };
+
+export interface Category {
+  id: string;
+  name: string;
+  displayName: string;
+  color: string;
+  budgetLimit: number;
+  isActive: boolean;
+};
+
+export const categoryService = {
+  getAllCategories: async (): Promise<Category[]> => {
+    try{
+      const response = await fetch(`${API_BASE_URL}/categories`);
+      if (!response.ok) {
+        throw new Error('Failed to fetch expenses');
+      }
+
+      const data: Category[] = await response.json();
+      return data;
+    }
+    catch (error) {
+      console.error('Error fetching categories:', error);
+      throw error;
+    };
+  }
+};

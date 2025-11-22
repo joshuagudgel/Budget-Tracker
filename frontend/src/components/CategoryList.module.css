@@ -1,0 +1,38 @@
+.categoryList {
+  padding: 20px;
+  width: 80%;
+  background-color:brown;
+  font-size: calc(10px + 1vmin);
+}
+
+.categoryList h2 {
+  text-align: center;
+}
+
+/* Name Column */
+.categoryList th:nth-child(1),
+.categoryList td:nth-child(1) {
+  width: 25%;
+  text-align: left;
+}
+
+/* Display Name Column */
+.categoryList th:nth-child(2),
+.categoryList td:nth-child(2) {
+  width: 25%;
+  text-align: left;
+}
+
+/* Color Column */
+.categoryList th:nth-child(3),
+.categoryList td:nth-child(3) {
+  width: 50%;
+  text-align: left;
+}
+
+/* BudgetLimit Column */
+.categoryList th:nth-child(4),
+.categoryList td:nth-child(4) {
+  width: 25%;
+  text-align: left;
+}

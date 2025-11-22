@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import styles from "./App.module.css";
 import ExpenseList from "./components/ExpenseList";
+import CategoryList from "./components/CategoryList";
 import NavBar from "./components/NavBar";
 
 function App() {
@@ -15,7 +16,7 @@ function App() {
       <NavBar currentView={currentView} onNavigationChange={handleViewChange} />
       <main className={styles.mainContent}>
         {currentView === "Expenses" && <ExpenseList />}
-        {currentView === "Categories" && <div>Categories View</div>}
+        {currentView === "Categories" && <CategoryList />}
       </main>
     </div>
   );
