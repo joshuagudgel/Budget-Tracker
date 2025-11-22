@@ -40,4 +40,8 @@ const expenseSchema = new mongoose.Schema({
   timestamps: true
 });
 
+// Common indexes for querying expenses
+expenseSchema.index({ date: -1}); // sort by date descending
+expenseSchema.index({ category: 1 }); // filter by category
+
 module.exports = mongoose.model('Expense', expenseSchema);
