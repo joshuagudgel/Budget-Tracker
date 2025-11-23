@@ -1,7 +1,7 @@
 const API_BASE_URL = 'http://localhost:3000/api';
 
 export interface Expense {
-  id: string;
+  _id: string;
   amount: number;
   description: string;
   date: string;
@@ -27,13 +27,13 @@ export const expenseService = {
   updateExpenses: async (expenses: Expense[]): Promise<void> => {
     for (const expense of expenses) {
       try {
-        await fetch(`${API_BASE_URL}/expenses/${expense.id}`, {
+        await fetch(`${API_BASE_URL}/expenses/${expense._id}`, {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(expense)
         });
       } catch (error) {
-        console.error(`Error updating expense with id ${expense.id}: `, error);
+        console.error(`Error updating expense with id ${expense._id}: `, error);
       }
     }
   
@@ -41,7 +41,7 @@ export const expenseService = {
 };
 
 export interface Category {
-  id: string;
+  _id: string;
   name: string;
   displayName: string;
   color: string;
