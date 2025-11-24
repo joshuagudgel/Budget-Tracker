@@ -5,6 +5,14 @@ interface CategoryListProps {
   categories: Category[];
 }
 
+const handleEditClick = () => {
+  console.log("Edit button clicked");
+};
+
+const handleSaveClick = () => {
+  console.log("Save button clicked");
+};
+
 const CategoryList: React.FC<CategoryListProps> = ({ categories }) => {
   const categoryHeaders = ["Name", "Display Name", "Color", "Budget Limit"];
 
@@ -36,6 +44,8 @@ const CategoryList: React.FC<CategoryListProps> = ({ categories }) => {
           )}
         </tbody>
       </table>
+      <button onClick={handleEditClick}>Edit</button>
+      <button onClick={handleSaveClick}>Save</button>
     </div>
   );
 };

@@ -1,12 +1,17 @@
 .categoryList {
   padding: 20px;
   width: 80%;
-  background-color:brown;
+  background-color:#a52a2a;
   font-size: calc(10px + 1vmin);
 }
 
 .categoryList h2 {
   text-align: center;
+}
+
+.categoryList table {
+  table-layout: fixed;
+  width: 100%;
 }
 
 /* Name Column */
@@ -26,7 +31,7 @@
 /* Color Column */
 .categoryList th:nth-child(3),
 .categoryList td:nth-child(3) {
-  width: 50%;
+  width: 25%;
   text-align: left;
 }
 
@@ -35,4 +40,8 @@
 .categoryList td:nth-child(4) {
   width: 25%;
   text-align: left;
+}
+
+.categoryList tbody tr:hover {
+  background-color: #ea6c6c;
 }

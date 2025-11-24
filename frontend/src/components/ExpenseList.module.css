@@ -1,12 +1,17 @@
 .expenseList {
   padding: 20px;
   width: 80%;
-  background-color:brown;
+  background-color:#a52a2a;
   font-size: calc(10px + 1vmin);
 }
 
 .expenseList h2 {
   text-align: center;
+}
+
+.expenseList table {
+  table-layout: fixed;
+  width: 100%;
 }
 
 /* Date Column */
@@ -26,6 +31,13 @@
 /* Description Column */
 .expenseList th:nth-child(3),
 .expenseList td:nth-child(3) {
-  width: 50%;
+  width: 25%;
+  text-align: left;
+}
+
+/* Category Column */
+.expenseList th:nth-child(4),
+.expenseList td:nth-child(4) {
+  width: 25%;
   text-align: left;
 }
