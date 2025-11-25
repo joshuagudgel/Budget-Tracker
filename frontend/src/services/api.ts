@@ -64,5 +64,18 @@ export const categoryService = {
       console.error('Error fetching categories:', error);
       throw error;
     };
+  },
+  updateCategories: async (categories: Category[]): Promise<void> => {
+    for (const category of categories) {
+      try {
+        await fetch(`${API_BASE_URL}/categories/${category._id}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(category)
+        });
+      } catch (error) {
+        console.error(`Error updating category with id ${category._id}: `, error);
+      }
+    }
   }
 };

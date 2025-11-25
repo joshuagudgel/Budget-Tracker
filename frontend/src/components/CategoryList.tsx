@@ -1,20 +1,58 @@
-import { Category } from "../services/api";
+import { useState, useEffect } from "react";
+import { Category, categoryService } from "../services/api";
 import styles from "./CategoryList.module.css";
 
 interface CategoryListProps {
   categories: Category[];
 }
 
-const handleEditClick = () => {
-  console.log("Edit button clicked");
-};
-
-const handleSaveClick = () => {
-  console.log("Save button clicked");
-};
-
 const CategoryList: React.FC<CategoryListProps> = ({ categories }) => {
+  const [localCategories, setLocalCategories] =
+    useState<Category[]>(categories);
+  const [changedCategoryIds, setChangedCategoryIds] = useState<string[]>([]);
   const categoryHeaders = ["Name", "Display Name", "Color", "Budget Limit"];
+
+  useEffect(() => {
+    setLocalCategories(categories);
+  }, [categories]);
+
+  const handleCategoryChange = (
+    categoryId: string,
+    field: string,
+    value: any
+  ) => {
+    console.log(`Category ${categoryId} changed: ${field} = ${value}`);
+    setLocalCategories((prevCategories) =>
+      prevCategories.map((category) =>
+        category._id === categoryId ? { ...category, [field]: value } : category
+      )
+    );
+    setChangedCategoryIds((prevIds) =>
+      prevIds.includes(categoryId) ? prevIds : [...prevIds, categoryId]
+    );
+  };
+
+  const handleSaveClick = async () => {
+    try {
+      // collect changed categories
+      const changedCategories = localCategories.filter((category) =>
+        changedCategoryIds.includes(category._id)
+      );
+
+      if (changedCategories.length === 0) {
+        console.log("No changes to save");
+        return;
+      }
+      // call API for each expense that was changed
+      await categoryService.updateCategories(changedCategories);
+
+      // clear changedCategoryIds after successful save
+      setChangedCategoryIds([]);
+      console.log("Successfully saved changes");
+    } catch (error) {
+      console.error("Error saving changes:", error);
+    }
+  };
 
   return (
     <div className={styles.categoryList}>
@@ -33,10 +71,22 @@ const CategoryList: React.FC<CategoryListProps> = ({ categories }) => {
               <td colSpan={4}>No categories found</td>
             </tr>
           ) : (
-            categories.map((category) => (
+            localCategories.map((category) => (
               <tr key={category._id}>
                 <td>{category.name}</td>
-                <td>{category.displayName}</td>
+                <td>
+                  <input
+                    type="text"
+                    value={category.displayName}
+                    onChange={(e) =>
+                      handleCategoryChange(
+                        category._id,
+                        "displayName",
+                        e.target.value
+                      )
+                    }
+                  />
+                </td>
                 <td>{category.color}</td>
                 <td>{category.budgetLimit}</td>
               </tr>
@@ -44,7 +94,6 @@ const CategoryList: React.FC<CategoryListProps> = ({ categories }) => {
           )}
         </tbody>
       </table>
-      <button onClick={handleEditClick}>Edit</button>
       <button onClick={handleSaveClick}>Save</button>
     </div>
   );

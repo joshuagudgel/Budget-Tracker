@@ -12,8 +12,6 @@ const ExpenseList: React.FC<ExpenseListProps> = ({ categories, expenses }) => {
   const [changedExpenseIds, setChangedExpenseIds] = useState<string[]>([]);
   const expenseHeaders = ["Date", "Amount", "Description", "Category"];
 
-  console.log("Rendering ExpenseList with expenses:", expenses);
-
   useEffect(() => {
     setLocalExpenses(expenses);
   }, [expenses]);
@@ -23,6 +21,7 @@ const ExpenseList: React.FC<ExpenseListProps> = ({ categories, expenses }) => {
     field: string,
     value: any
   ) => {
+    console.log(`Expense ${expenseId} changed: ${field} = ${value}`);
     setLocalExpenses((prevExpenses) =>
       prevExpenses.map((expense) =>
         expense._id === expenseId ? { ...expense, [field]: value } : expense
@@ -34,16 +33,25 @@ const ExpenseList: React.FC<ExpenseListProps> = ({ categories, expenses }) => {
   };
 
   const handleSaveClick = async () => {
-    // collect changed expenses
-    const changedExpenses = localExpenses.filter((expense) =>
-      changedExpenseIds.includes(expense._id)
-    );
-    // call API for each expense that was changed
-    await expenseService.updateExpenses(changedExpenses);
+    try {
+      // collect changed expenses
+      const changedExpenses = localExpenses.filter((expense) =>
+        changedExpenseIds.includes(expense._id)
+      );
 
-    // clear changedExpenseIds after successful save
-    setChangedExpenseIds([]);
-    console.log("Successfully saved changes");
+      if (changedExpenses.length === 0) {
+        console.log("No changes to save");
+        return;
+      }
+      // call API for each expense that was changed
+      await expenseService.updateExpenses(changedExpenses);
+
+      // clear changedExpenseIds after successful save
+      setChangedExpenseIds([]);
+      console.log("Successfully saved changes");
+    } catch (error) {
+      console.error("Error saving changes:", error);
+    }
   };
 
   return (
@@ -65,8 +73,29 @@ const ExpenseList: React.FC<ExpenseListProps> = ({ categories, expenses }) => {
           ) : (
             localExpenses.map((expense) => (
               <tr key={expense._id}>
-                <td>{expense.date.split("T")[0]}</td>
-                <td>${expense.amount.toFixed(2)}</td>
+                <td>
+                  <input
+                    type="date"
+                    value={expense.date.split("T")[0]}
+                    onChange={(e) =>
+                      handleExpenseChange(expense._id, "date", e.target.value)
+                    }
+                  />
+                </td>
+                <td>
+                  <input
+                    type="number"
+                    step="0.01"
+                    value={expense.amount}
+                    onChange={(e) =>
+                      handleExpenseChange(
+                        expense._id,
+                        "amount",
+                        parseFloat(e.target.value) || 0
+                      )
+                    }
+                  />
+                </td>
                 <td>
                   <input
                     type="text"
