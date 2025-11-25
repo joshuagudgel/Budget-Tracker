@@ -49,7 +49,27 @@ export interface Category {
   isActive: boolean;
 };
 
+type CreateCategoryRequest = Omit<Category, '_id' | 'isActive'>;
+
 export const categoryService = {
+  createCategory: async (category: CreateCategoryRequest): Promise<Category> => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/categories`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(category)
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to create category');
+      }
+
+      return await response.json();
+    } catch (error) {
+      console.error('Error creating category: ', error);
+      throw error;
+    }
+  },
   getAllCategories: async (): Promise<Category[]> => {
     try{
       const response = await fetch(`${API_BASE_URL}/categories`);

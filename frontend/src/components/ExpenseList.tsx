@@ -5,9 +5,14 @@ import styles from "./ExpenseList.module.css";
 interface ExpenseListProps {
   categories: Category[];
   expenses: Expense[];
+  onExpensesUpdated?: () => void;
 }
 
-const ExpenseList: React.FC<ExpenseListProps> = ({ categories, expenses }) => {
+const ExpenseList: React.FC<ExpenseListProps> = ({
+  categories,
+  expenses,
+  onExpensesUpdated,
+}) => {
   const [localExpenses, setLocalExpenses] = useState<Expense[]>(expenses);
   const [changedExpenseIds, setChangedExpenseIds] = useState<string[]>([]);
   const expenseHeaders = ["Date", "Amount", "Description", "Category"];
@@ -46,9 +51,12 @@ const ExpenseList: React.FC<ExpenseListProps> = ({ categories, expenses }) => {
       // call API for each expense that was changed
       await expenseService.updateExpenses(changedExpenses);
 
+      onExpensesUpdated?.();
+
       // clear changedExpenseIds after successful save
       setChangedExpenseIds([]);
       console.log("Successfully saved changes");
+      alert("Expenses saved successfully");
     } catch (error) {
       console.error("Error saving changes:", error);
     }

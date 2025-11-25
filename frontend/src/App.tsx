@@ -36,6 +36,24 @@ function App() {
     fetchData();
   }, []);
 
+  const refreshCategories = async () => {
+    try {
+      const data = await categoryService.getAllCategories();
+      setCategories(data);
+    } catch (error) {
+      console.error("Failed to refresh categories:", error);
+    }
+  };
+
+  const refreshExpenses = async () => {
+    try {
+      const data = await expenseService.getAllExpenses();
+      setExpenses(data);
+    } catch (error) {
+      console.error("Failed to refresh expenses:", error);
+    }
+  };
+
   const handleViewChange = (nav: string) => {
     setCurrentView(nav);
   };
@@ -48,10 +66,17 @@ function App() {
       <NavBar currentView={currentView} onNavigationChange={handleViewChange} />
       <main className={styles.mainContent}>
         {currentView === "Expenses" && (
-          <ExpenseList categories={categories} expenses={expenses} />
+          <ExpenseList
+            categories={categories}
+            expenses={expenses}
+            onExpensesUpdated={refreshExpenses}
+          />
         )}
         {currentView === "Categories" && (
-          <CategoryList categories={categories} />
+          <CategoryList
+            categories={categories}
+            onCategoriesUpdated={refreshCategories}
+          />
         )}
       </main>
     </div>
