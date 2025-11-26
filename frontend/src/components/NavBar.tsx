@@ -28,6 +28,14 @@ const NavBar: React.FC<NavBarProps> = ({ currentView, onNavigationChange }) => {
           >
             Categories
           </p>
+          <p
+            className={`${styles.navItem} ${
+              currentView === "Analysis" ? styles.navItemActive : ""
+            }`}
+            onClick={() => onNavigationChange("Analysis")}
+          >
+            Analysis
+          </p>
         </div>
       </div>
     </nav>

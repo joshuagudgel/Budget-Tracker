@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import styles from "./App.module.css";
 import ExpenseList from "./components/ExpenseList";
 import CategoryList from "./components/CategoryList";
+import AnalysisView from "./components/AnalysisView";
 import NavBar from "./components/NavBar";
 import {
   expenseService,
@@ -77,6 +78,9 @@ function App() {
             categories={categories}
             onCategoriesUpdated={refreshCategories}
           />
+        )}
+        {currentView === "Analysis" && (
+          <AnalysisView expenses={expenses} categories={categories} />
         )}
       </main>
     </div>
