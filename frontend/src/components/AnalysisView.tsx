@@ -11,6 +11,7 @@ const AnalysisView: React.FC<AnalysisViewProps> = ({
   categories,
 }) => {
   const [selectedMonth, setSelectedMonth] = useState<string>("10");
+  const [selectedCategory, setSelectedCategory] = useState<string>("all");
   const [totalExpenses, setTotalExpenses] = useState<number>(0);
   const [loading, setLoading] = useState<boolean>(false);
 
@@ -22,9 +23,12 @@ const AnalysisView: React.FC<AnalysisViewProps> = ({
       const [year, month] = dateString
         .split("-")
         .map((num) => parseInt(num, 10));
-      return year === currentYear && month === monthNumber;
+      const isCorrectMonth = year === currentYear && month === monthNumber;
+      const isCorrectCategory =
+        selectedCategory === "all" || expense.category === selectedCategory;
+      return isCorrectMonth && isCorrectCategory;
     });
-  }, [expenses, selectedMonth]);
+  }, [expenses, selectedMonth, selectedCategory]);
 
   const generateReport = () => {
     setLoading(true);
@@ -55,6 +59,19 @@ const AnalysisView: React.FC<AnalysisViewProps> = ({
         <option value="9">September</option>
         <option value="10">October</option>
         <option value="11">November</option>
+      </select>
+
+      <label>Category: </label>
+      <select
+        value={selectedCategory}
+        onChange={(e) => setSelectedCategory(e.target.value)}
+      >
+        <option value="all">All</option>
+        {categories.map((category) => (
+          <option key={category._id} value={category.name}>
+            {category.displayName}
+          </option>
+        ))}
       </select>
 
       <button onClick={generateReport} disabled={loading}>
