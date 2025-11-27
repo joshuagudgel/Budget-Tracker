@@ -32,7 +32,6 @@ const CategoryList: React.FC<CategoryListProps> = ({
     field: string,
     value: any
   ) => {
-    console.log(`Category ${categoryId} changed: ${field} = ${value}`);
     setLocalCategories((prevCategories) =>
       prevCategories.map((category) =>
         category._id === categoryId ? { ...category, [field]: value } : category
@@ -51,7 +50,6 @@ const CategoryList: React.FC<CategoryListProps> = ({
       );
 
       if (changedCategories.length === 0) {
-        console.log("No changes to save");
         return;
       }
       // call API for each expense that was changed
@@ -61,7 +59,6 @@ const CategoryList: React.FC<CategoryListProps> = ({
       setChangedCategoryIds([]);
       onCategoriesUpdated?.();
 
-      console.log("Successfully saved changes");
       alert("Categories saved successfully");
     } catch (error) {
       console.error("Error saving changes:", error);

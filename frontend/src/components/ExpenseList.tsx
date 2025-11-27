@@ -26,7 +26,6 @@ const ExpenseList: React.FC<ExpenseListProps> = ({
     field: string,
     value: any
   ) => {
-    console.log(`Expense ${expenseId} changed: ${field} = ${value}`);
     setLocalExpenses((prevExpenses) =>
       prevExpenses.map((expense) =>
         expense._id === expenseId ? { ...expense, [field]: value } : expense
@@ -45,7 +44,6 @@ const ExpenseList: React.FC<ExpenseListProps> = ({
       );
 
       if (changedExpenses.length === 0) {
-        console.log("No changes to save");
         return;
       }
       // call API for each expense that was changed
@@ -55,7 +53,6 @@ const ExpenseList: React.FC<ExpenseListProps> = ({
 
       // clear changedExpenseIds after successful save
       setChangedExpenseIds([]);
-      console.log("Successfully saved changes");
       alert("Expenses saved successfully");
     } catch (error) {
       console.error("Error saving changes:", error);
