@@ -37,6 +37,15 @@ export const expenseService = {
       }
     }
   
+  },
+  deleteExpense: async (expenseId: string): Promise<void> => {
+    try {
+      await fetch(`${API_BASE_URL}/expenses/${expenseId}`, {
+        method: 'DELETE'
+      });
+    } catch (error) {
+      console.error(`Error deleting expense with id ${expenseId}: `, error);
+    }
   }
 };
 

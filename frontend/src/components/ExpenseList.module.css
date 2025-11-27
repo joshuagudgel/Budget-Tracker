@@ -17,27 +17,34 @@
 /* Date Column */
 .expenseList th:nth-child(1),
 .expenseList td:nth-child(1) {
-  width: 25%;
+  width: 20%;
   text-align: left;
 }
 
 /* Amount Column */
 .expenseList th:nth-child(2),
 .expenseList td:nth-child(2) {
-  width: 25%;
+  width: 20%;
   text-align: left;
 }
 
 /* Description Column */
 .expenseList th:nth-child(3),
 .expenseList td:nth-child(3) {
-  width: 25%;
+  width: 20%;
   text-align: left;
 }
 
 /* Category Column */
 .expenseList th:nth-child(4),
 .expenseList td:nth-child(4) {
-  width: 25%;
+  width: 250;
+  text-align: left;
+}
+
+/* Delete Column */
+.expenseList th:nth-child(5),
+.expenseList td:nth-child(5) {
+  width: 20%;
   text-align: left;
 }

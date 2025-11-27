@@ -59,6 +59,18 @@ const ExpenseList: React.FC<ExpenseListProps> = ({
     }
   };
 
+  const handleDeleteClick = (expenseId: string) => async () => {
+    try {
+      await expenseService.deleteExpense(expenseId);
+      setLocalExpenses((prevExpenses) =>
+        prevExpenses.filter((expense) => expense._id !== expenseId)
+      );
+      onExpensesUpdated?.();
+    } catch (error) {
+      console.error("Error deleting expense:", error);
+    }
+  };
+
   return (
     <div className={styles.expenseList}>
       <h2>Expenses</h2>
@@ -132,6 +144,11 @@ const ExpenseList: React.FC<ExpenseListProps> = ({
                       </option>
                     ))}
                   </select>
+                </td>
+                <td>
+                  <button onClick={handleDeleteClick(expense._id)}>
+                    Delete
+                  </button>
                 </td>
               </tr>
             ))
