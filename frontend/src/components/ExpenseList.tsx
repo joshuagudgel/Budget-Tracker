@@ -15,7 +15,13 @@ const ExpenseList: React.FC<ExpenseListProps> = ({
 }) => {
   const [localExpenses, setLocalExpenses] = useState<Expense[]>(expenses);
   const [changedExpenseIds, setChangedExpenseIds] = useState<string[]>([]);
-  const expenseHeaders = ["Date", "Amount", "Description", "Category"];
+  const expenseHeaders = [
+    "Date",
+    "Amount",
+    "Description",
+    "Category",
+    "Split/Delete",
+  ];
 
   useEffect(() => {
     setLocalExpenses(expenses);
@@ -68,6 +74,14 @@ const ExpenseList: React.FC<ExpenseListProps> = ({
       onExpensesUpdated?.();
     } catch (error) {
       console.error("Error deleting expense:", error);
+    }
+  };
+
+  const handleSplitClick = (expenseId: string) => async () => {
+    try {
+      window.alert(`Splitting expense with ID: ${expenseId}`);
+    } catch (error) {
+      console.error("Error splitting expense:", error);
     }
   };
 
@@ -146,6 +160,7 @@ const ExpenseList: React.FC<ExpenseListProps> = ({
                   </select>
                 </td>
                 <td>
+                  <button onClick={handleSplitClick(expense._id)}>Split</button>
                   <button onClick={handleDeleteClick(expense._id)}>
                     Delete
                   </button>

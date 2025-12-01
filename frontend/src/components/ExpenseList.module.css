@@ -42,7 +42,7 @@
   text-align: left;
 }
 
-/* Delete Column */
+/* Split/Delete Column */
 .expenseList th:nth-child(5),
 .expenseList td:nth-child(5) {
   width: 20%;
