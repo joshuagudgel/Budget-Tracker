@@ -80,12 +80,31 @@ const ExpenseList: React.FC<ExpenseListProps> = ({
     }
   };
 
-  const handleSplitClick = (expenseId: string) => async () => {
+  const handleSplitClick = (expense: Expense) => async () => {
+    console.log(`Splitting expense: ${expense}`);
+    setExpenseToSplit(expense);
+    setSplitModalOpen(true);
+  };
+
+  const handleSplitExpense = async (
+    expense1: Omit<Expense, "_id">,
+    expense2: Omit<Expense, "_id">
+  ) => {
     try {
-      console.log(`Splitting expense with ID: ${expenseId}`);
-      setSplitModalOpen(true);
+      await expenseService.createExpense(expense1);
+      await expenseService.createExpense(expense2);
+
+      if (expenseToSplit) {
+        await expenseService.deleteExpense(expenseToSplit._id);
+      }
+
+      setSplitModalOpen(false);
+      setExpenseToSplit(null);
+
+      onExpensesUpdated?.();
+      alert("Expense Split Successfully");
     } catch (error) {
-      console.error("Error splitting expense:", error);
+      console.error(`Error splitting expense: ${error}`);
     }
   };
 
@@ -164,7 +183,7 @@ const ExpenseList: React.FC<ExpenseListProps> = ({
                   </select>
                 </td>
                 <td>
-                  <button onClick={handleSplitClick(expense._id)}>Split</button>
+                  <button onClick={handleSplitClick(expense)}>Split</button>
                   <button onClick={handleDeleteClick(expense._id)}>
                     Delete
                   </button>
@@ -183,6 +202,7 @@ const ExpenseList: React.FC<ExpenseListProps> = ({
           setSplitModalOpen(false);
           setExpenseToSplit(null);
         }}
+        onSplit={handleSplitExpense}
       />
     </div>
   );
