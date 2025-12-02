@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Expense, Category, expenseService } from "../services/api";
 import styles from "./ExpenseList.module.css";
+import SplitExpenseModal from "./SplitExpenseModal";
 
 interface ExpenseListProps {
   categories: Category[];
@@ -15,6 +16,8 @@ const ExpenseList: React.FC<ExpenseListProps> = ({
 }) => {
   const [localExpenses, setLocalExpenses] = useState<Expense[]>(expenses);
   const [changedExpenseIds, setChangedExpenseIds] = useState<string[]>([]);
+  const [splitModalOpen, setSplitModalOpen] = useState<boolean>(false);
+  const [expenseToSplit, setExpenseToSplit] = useState<Expense | null>(null);
   const expenseHeaders = [
     "Date",
     "Amount",
@@ -79,7 +82,8 @@ const ExpenseList: React.FC<ExpenseListProps> = ({
 
   const handleSplitClick = (expenseId: string) => async () => {
     try {
-      window.alert(`Splitting expense with ID: ${expenseId}`);
+      console.log(`Splitting expense with ID: ${expenseId}`);
+      setSplitModalOpen(true);
     } catch (error) {
       console.error("Error splitting expense:", error);
     }
@@ -171,6 +175,15 @@ const ExpenseList: React.FC<ExpenseListProps> = ({
         </tbody>
       </table>
       <button onClick={handleSaveClick}>Save</button>
+      <SplitExpenseModal
+        isOpen={splitModalOpen}
+        expenseToSplit={expenseToSplit}
+        categories={categories}
+        onClose={() => {
+          setSplitModalOpen(false);
+          setExpenseToSplit(null);
+        }}
+      />
     </div>
   );
 };
