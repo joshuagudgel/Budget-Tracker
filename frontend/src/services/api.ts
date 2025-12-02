@@ -9,6 +9,23 @@ export interface Expense {
 }
 
 export const expenseService = {
+  createExpense: async (expense: Omit<Expense, '_id'>): Promise<Expense> => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/expenses`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(expense)
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to create expense');
+      }
+      return await response.json();
+    } catch (error) {
+      console.error('Error creating expense: ', error);
+      throw error;
+    }
+  },
   getAllExpenses: async (): Promise<Expense[]> => {
     try {
       const response = await fetch(`${API_BASE_URL}/expenses`);
