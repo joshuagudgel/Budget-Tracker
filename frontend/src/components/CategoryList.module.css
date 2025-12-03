@@ -45,3 +45,7 @@
 .categoryList tbody tr:hover {
   background-color: #ea6c6c;
 }
+
+.validationError {
+  color: #b80202
+}

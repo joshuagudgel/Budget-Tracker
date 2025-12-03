@@ -14,7 +14,6 @@ const CategoryList: React.FC<CategoryListProps> = ({
   const [localCategories, setLocalCategories] =
     useState<Category[]>(categories);
   const [changedCategoryIds, setChangedCategoryIds] = useState<string[]>([]);
-  const categoryHeaders = ["Name", "Display Name", "Color", "Budget Limit"];
   const [newCategory, setNewCategory] = useState({
     name: "",
     displayName: "",
@@ -22,6 +21,7 @@ const CategoryList: React.FC<CategoryListProps> = ({
     budgetLimit: 0,
   });
   const [showAddForm, setShowAddForm] = useState<boolean>(false);
+  const categoryHeaders = ["Name", "Display Name", "Color", "Budget Limit"];
 
   useEffect(() => {
     setLocalCategories(categories);
@@ -41,6 +41,14 @@ const CategoryList: React.FC<CategoryListProps> = ({
       prevIds.includes(categoryId) ? prevIds : [...prevIds, categoryId]
     );
   };
+
+  const isValidCategory =
+    newCategory.name &&
+    newCategory.name === newCategory.name.toLowerCase() &&
+    !newCategory.name.includes(" ") &&
+    newCategory.displayName.trim().length > 0 &&
+    /^#[0-9A-Fa-f]{6}$/.test(newCategory.color) &&
+    newCategory.budgetLimit > 0;
 
   const handleSaveClick = async () => {
     try {
@@ -76,7 +84,13 @@ const CategoryList: React.FC<CategoryListProps> = ({
       !newCategory.color ||
       !newCategory.budgetLimit
     ) {
-      alert("Please fill in all fields");
+      alert(
+        "Please ensure all fields are properly formatted:\n" +
+          "- Name: lowercase, no spaces\n" +
+          "- Display Name: required\n" +
+          "- Color: hex code (e.g., #FF5733)\n" +
+          "- Budget Limit: greater than 0"
+      );
       return;
     }
 
@@ -176,7 +190,7 @@ const CategoryList: React.FC<CategoryListProps> = ({
           <h3>Add New Category</h3>
           <input
             type="text"
-            placeholder="Name"
+            placeholder="Name (lowercase, no spaces)"
             value={newCategory.name}
             onChange={(e) =>
               setNewCategory({ ...newCategory, name: e.target.value })
@@ -192,7 +206,7 @@ const CategoryList: React.FC<CategoryListProps> = ({
           />
           <input
             type="text"
-            placeholder="Color"
+            placeholder="Color (#FF5733)"
             value={newCategory.color}
             onChange={(e) =>
               setNewCategory({ ...newCategory, color: e.target.value })
@@ -210,6 +224,11 @@ const CategoryList: React.FC<CategoryListProps> = ({
             }
           />
           <button onClick={handleCreateCategory}>Create</button>
+          {!isValidCategory && (
+            <div className={styles.validationError}>
+              Category improperly formatted
+            </div>
+          )}
         </div>
       )}
     </div>
