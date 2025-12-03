@@ -50,3 +50,12 @@
   border: 1px solid #ddd;
   border-radius: 6px;
 }
+
+.actions {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.validationError {
+  color: #b80202
+}

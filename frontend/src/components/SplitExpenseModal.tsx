@@ -18,6 +18,7 @@ const SplitExpenseModal: React.FC<SplitExpenseModalProps> = ({
   expenseToSplit,
   categories,
   onClose,
+  onSplit,
 }) => {
   const [expense1, setExpense1] = useState({
     amount: 0,
@@ -29,6 +30,10 @@ const SplitExpenseModal: React.FC<SplitExpenseModalProps> = ({
     description: "",
     category: "",
   });
+
+  const totalAmount = expense1.amount + expense2.amount;
+  const originalAmount = expenseToSplit?.amount || 0;
+  const isValidSplit = Math.abs(totalAmount - originalAmount) < 0.01;
 
   useEffect(() => {
     if (expenseToSplit) {
@@ -45,6 +50,31 @@ const SplitExpenseModal: React.FC<SplitExpenseModalProps> = ({
       });
     }
   }, [expenseToSplit]);
+
+  // format expense data and send to parent to make requests
+  const handleSplit = async () => {
+    if (!expenseToSplit) return;
+
+    const newExpense1: Omit<Expense, "_id"> = {
+      amount: expense1.amount,
+      description: expense1.description.trim(),
+      category: expense1.category,
+      date: expenseToSplit.date,
+    };
+
+    const newExpense2: Omit<Expense, "_id"> = {
+      amount: expense2.amount,
+      description: expense2.description.trim(),
+      category: expense2.category,
+      date: expenseToSplit.date,
+    };
+
+    try {
+      await onSplit(newExpense1, newExpense2);
+    } catch (error) {
+      console.error("Split operation failed:", error);
+    }
+  };
 
   if (!isOpen) return null;
 
@@ -162,6 +192,20 @@ const SplitExpenseModal: React.FC<SplitExpenseModalProps> = ({
                     ))}
                   </select>
                 </div>
+                <div>
+                  Total: ${(expense1.amount + expense2.amount).toFixed(2)}
+                </div>
+                {!isValidSplit && (
+                  <div className={styles.validationError}>
+                    Split amounts must equal original amount
+                  </div>
+                )}
+              </div>
+              <div className={styles.actions}>
+                <button onClick={onClose}>Cancel</button>
+                <button onClick={handleSplit} disabled={!isValidSplit}>
+                  Split Expense
+                </button>
               </div>
             </div>
           )}
