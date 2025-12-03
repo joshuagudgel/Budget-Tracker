@@ -10,25 +10,46 @@ const AnalysisView: React.FC<AnalysisViewProps> = ({
   expenses,
   categories,
 }) => {
-  const [selectedMonth, setSelectedMonth] = useState<string>("10");
+  const [selectedYear, setSelectedYear] = useState<string>("2025");
+  const [selectedMonth, setSelectedMonth] = useState<string>("1");
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
   const [totalExpenses, setTotalExpenses] = useState<number>(0);
   const [loading, setLoading] = useState<boolean>(false);
 
+  const months = [
+    { name: "January", number: "1" },
+    { name: "February", number: "2" },
+    { name: "March", number: "3" },
+    { name: "April", number: "4" },
+    { name: "May", number: "5" },
+    { name: "June", number: "6" },
+    { name: "July", number: "7" },
+    { name: "August", number: "8" },
+    { name: "September", number: "9" },
+    { name: "October", number: "10" },
+    { name: "November", number: "11" },
+    { name: "December", number: "12" },
+  ];
+  const years = ["2025", "2024"];
+
   const monthlyExpenses = useMemo(() => {
-    const currentYear = new Date().getUTCFullYear();
+    const yearNumber = parseInt(selectedYear, 10);
     const monthNumber = parseInt(selectedMonth, 10);
+
     return expenses.filter((expense) => {
       const dateString = expense.date.split("T")[0];
       const [year, month] = dateString
         .split("-")
         .map((num) => parseInt(num, 10));
-      const isCorrectMonth = year === currentYear && month === monthNumber;
+
+      const isCorrectYear = year === yearNumber;
+      const isCorrectMonth = month === monthNumber;
       const isCorrectCategory =
         selectedCategory === "all" || expense.category === selectedCategory;
-      return isCorrectMonth && isCorrectCategory;
+
+      return isCorrectYear && isCorrectMonth && isCorrectCategory;
     });
-  }, [expenses, selectedMonth, selectedCategory]);
+  }, [expenses, selectedMonth, selectedCategory, selectedYear]);
 
   const generateReport = () => {
     setLoading(true);
@@ -51,14 +72,24 @@ const AnalysisView: React.FC<AnalysisViewProps> = ({
       <h2>Analysis</h2>
       <p>Total Expenses</p>
 
+      <label>Year: </label>
+      <select
+        value={selectedYear}
+        onChange={(e) => setSelectedYear(e.target.value)}
+      >
+        {years.map((year) => (
+          <option value={year}>{year}</option>
+        ))}
+      </select>
+
       <label>Month: </label>
       <select
         value={selectedMonth}
         onChange={(e) => setSelectedMonth(e.target.value)}
       >
-        <option value="9">September</option>
-        <option value="10">October</option>
-        <option value="11">November</option>
+        {months.map((month) => (
+          <option value={month.number}>{month.name}</option>
+        ))}
       </select>
 
       <label>Category: </label>
