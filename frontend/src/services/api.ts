@@ -123,5 +123,14 @@ export const categoryService = {
         console.error(`Error updating category with id ${category._id}: `, error);
       }
     }
+  },
+  deleteCategory: async (categoryId: string): Promise<void> => {
+    try {
+      await fetch(`${API_BASE_URL}/categories/${categoryId}`, {
+        method: 'DELETE'
+      });
+    } catch (error) {
+      console.error(`Error deleting expense with id ${categoryId}: `, error);
+    }
   }
 };

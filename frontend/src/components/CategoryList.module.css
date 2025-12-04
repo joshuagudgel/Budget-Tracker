@@ -17,28 +17,35 @@
 /* Name Column */
 .categoryList th:nth-child(1),
 .categoryList td:nth-child(1) {
-  width: 25%;
+  width: 20%;
   text-align: left;
 }
 
 /* Display Name Column */
 .categoryList th:nth-child(2),
 .categoryList td:nth-child(2) {
-  width: 25%;
+  width: 20%;
   text-align: left;
 }
 
 /* Color Column */
 .categoryList th:nth-child(3),
 .categoryList td:nth-child(3) {
-  width: 25%;
+  width: 20%;
   text-align: left;
 }
 
 /* BudgetLimit Column */
 .categoryList th:nth-child(4),
 .categoryList td:nth-child(4) {
-  width: 25%;
+  width: 20%;
+  text-align: left;
+}
+
+/* Action Column */
+.categoryList th:nth-child(5),
+.categoryList td:nth-child(5) {
+  width: 20%;
   text-align: left;
 }
 
@@ -47,5 +54,5 @@
 }
 
 .validationError {
-  color: #b80202
+  color: #f5e1e1
 }

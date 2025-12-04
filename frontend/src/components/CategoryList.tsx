@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { Category, categoryService } from "../services/api";
 import styles from "./CategoryList.module.css";
+import AddCategoryModal from "./AddCategoryModal";
 
 interface CategoryListProps {
   categories: Category[];
@@ -14,14 +15,14 @@ const CategoryList: React.FC<CategoryListProps> = ({
   const [localCategories, setLocalCategories] =
     useState<Category[]>(categories);
   const [changedCategoryIds, setChangedCategoryIds] = useState<string[]>([]);
-  const [newCategory, setNewCategory] = useState({
-    name: "",
-    displayName: "",
-    color: "",
-    budgetLimit: 0,
-  });
-  const [showAddForm, setShowAddForm] = useState<boolean>(false);
-  const categoryHeaders = ["Name", "Display Name", "Color", "Budget Limit"];
+  const [showAddModal, setShowAddModal] = useState<boolean>(false);
+  const categoryHeaders = [
+    "Name",
+    "Display Name",
+    "Color",
+    "Budget Limit",
+    "Delete",
+  ];
 
   useEffect(() => {
     setLocalCategories(categories);
@@ -30,7 +31,7 @@ const CategoryList: React.FC<CategoryListProps> = ({
   const handleCategoryChange = (
     categoryId: string,
     field: string,
-    value: any
+    value: string | number
   ) => {
     setLocalCategories((prevCategories) =>
       prevCategories.map((category) =>
@@ -41,14 +42,6 @@ const CategoryList: React.FC<CategoryListProps> = ({
       prevIds.includes(categoryId) ? prevIds : [...prevIds, categoryId]
     );
   };
-
-  const isValidCategory =
-    newCategory.name &&
-    newCategory.name === newCategory.name.toLowerCase() &&
-    !newCategory.name.includes(" ") &&
-    newCategory.displayName.trim().length > 0 &&
-    /^#[0-9A-Fa-f]{6}$/.test(newCategory.color) &&
-    newCategory.budgetLimit > 0;
 
   const handleSaveClick = async () => {
     try {
@@ -74,40 +67,36 @@ const CategoryList: React.FC<CategoryListProps> = ({
   };
 
   const handleAddClick = () => {
-    setShowAddForm(true);
+    setShowAddModal(true);
   };
 
-  const handleCreateCategory = async () => {
-    if (
-      !newCategory.name ||
-      !newCategory.displayName ||
-      !newCategory.color ||
-      !newCategory.budgetLimit
-    ) {
-      alert(
-        "Please ensure all fields are properly formatted:\n" +
-          "- Name: lowercase, no spaces\n" +
-          "- Display Name: required\n" +
-          "- Color: hex code (e.g., #FF5733)\n" +
-          "- Budget Limit: greater than 0"
-      );
-      return;
-    }
-
+  const handleCreateCategory = async (
+    newCategory: Omit<Category, "_id" | "isActive">
+  ) => {
     try {
       await categoryService.createCategory(newCategory);
 
       onCategoriesUpdated?.();
 
-      setShowAddForm(false);
-      setNewCategory({
-        name: "",
-        displayName: "",
-        color: "",
-        budgetLimit: 0,
-      });
+      setShowAddModal(false);
+
+      alert("Category created successfully");
     } catch (error) {
       console.error("Error creating category:", error);
+      throw error;
+    }
+  };
+
+  const handleDeleteCategory = async (categoryId: string) => {
+    try {
+      await categoryService.deleteCategory(categoryId);
+      setLocalCategories((prev) =>
+        prev.filter((cat) => cat._id !== categoryId)
+      );
+      onCategoriesUpdated?.();
+      alert("Category deleted successfully");
+    } catch (error) {
+      console.error(`Error deleting category: ${error}`);
     }
   };
 
@@ -178,6 +167,11 @@ const CategoryList: React.FC<CategoryListProps> = ({
                     }
                   />
                 </td>
+                <td>
+                  <button onClick={() => handleDeleteCategory(category._id)}>
+                    Delete
+                  </button>
+                </td>
               </tr>
             ))
           )}
@@ -185,51 +179,12 @@ const CategoryList: React.FC<CategoryListProps> = ({
       </table>
       <button onClick={handleSaveClick}>Save</button>
       <button onClick={handleAddClick}>Add</button>
-      {showAddForm && (
-        <div className={styles.addCategoryForm}>
-          <h3>Add New Category</h3>
-          <input
-            type="text"
-            placeholder="Name (lowercase, no spaces)"
-            value={newCategory.name}
-            onChange={(e) =>
-              setNewCategory({ ...newCategory, name: e.target.value })
-            }
-          />
-          <input
-            type="text"
-            placeholder="Display Name"
-            value={newCategory.displayName}
-            onChange={(e) =>
-              setNewCategory({ ...newCategory, displayName: e.target.value })
-            }
-          />
-          <input
-            type="text"
-            placeholder="Color (#FF5733)"
-            value={newCategory.color}
-            onChange={(e) =>
-              setNewCategory({ ...newCategory, color: e.target.value })
-            }
-          />
-          <input
-            type="number"
-            placeholder="Budget Limit"
-            value={newCategory.budgetLimit}
-            onChange={(e) =>
-              setNewCategory({
-                ...newCategory,
-                budgetLimit: parseFloat(e.target.value) || 0,
-              })
-            }
-          />
-          <button onClick={handleCreateCategory}>Create</button>
-          {!isValidCategory && (
-            <div className={styles.validationError}>
-              Category improperly formatted
-            </div>
-          )}
-        </div>
+      {showAddModal && (
+        <AddCategoryModal
+          isOpen={showAddModal}
+          onClose={() => setShowAddModal(false)}
+          onAdd={handleCreateCategory}
+        />
       )}
     </div>
   );
