@@ -57,7 +57,12 @@ const AddCategoryModal: React.FC<AddCategoryModalProps> = ({
   return (
     <div className={styles.modalOverlay}>
       <div className={styles.modalContent}>
-        <h3>Add New Category</h3>
+        <div className={styles.header}>
+          <h3>Add Category</h3>
+          <button className={styles.closeButton} onClick={onClose}>
+            ×
+          </button>
+        </div>
         <input
           type="text"
           placeholder="Name (lowercase, no spaces)"
