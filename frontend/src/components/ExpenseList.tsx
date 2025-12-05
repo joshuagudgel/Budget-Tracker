@@ -184,8 +184,11 @@ const ExpenseList: React.FC<ExpenseListProps> = ({
                 </td>
                 <td>
                   <button onClick={handleSplitClick(expense)}>Split</button>
-                  <button onClick={handleDeleteClick(expense._id)}>
-                    Delete
+                  <button
+                    className={styles.closeButton}
+                    onClick={handleDeleteClick(expense._id)}
+                  >
+                    x
                   </button>
                 </td>
               </tr>
