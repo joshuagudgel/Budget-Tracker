@@ -2,6 +2,8 @@
 
 Exploring a NoSQL solution with MongoDB while organizing my finances.
 
+![Screenshot](images/ExpenseManagement.png)
+
 ## Backend
 
 ### Stack
