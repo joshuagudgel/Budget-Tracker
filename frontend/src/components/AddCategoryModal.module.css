@@ -39,3 +39,7 @@
   cursor: pointer;
   color: #666;
 }
+
+.closeButton:hover {
+  color: #000;
+}
