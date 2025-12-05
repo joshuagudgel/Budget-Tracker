@@ -17,7 +17,7 @@
 .expenseList th:nth-child(1),
 .expenseList td:nth-child(1) {
   padding: 8px 12px;
-  width: 20%;
+  width: 15%;
   text-align: left;
 }
 
@@ -25,7 +25,7 @@
 .expenseList th:nth-child(2),
 .expenseList td:nth-child(2) {
   padding: 8px 12px;
-  width: 10%;
+  width: 5%;
   text-align: right;
 }
 
@@ -47,7 +47,7 @@
 .expenseList th:nth-child(4),
 .expenseList td:nth-child(4) {
   padding: 8px 12px;
-  width: 250;
+  width: 30%;
   text-align: left;
 }
 
