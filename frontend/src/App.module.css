@@ -1,6 +1,7 @@
 .app {
-  background-color: #13151a;
-  color: white;
+  /*(background-color: #13151a;*/
+  background-color: #a52a2a;
+  color: #000000;
   min-height: 100vh;
 }
 

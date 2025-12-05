@@ -110,7 +110,6 @@ const ExpenseList: React.FC<ExpenseListProps> = ({
 
   return (
     <div className={styles.expenseList}>
-      <h2>Expenses</h2>
       <table>
         <thead>
           <tr>
@@ -122,36 +121,16 @@ const ExpenseList: React.FC<ExpenseListProps> = ({
         <tbody>
           {localExpenses.length === 0 ? (
             <tr>
-              <td colSpan={3}>No expenses found</td>
+              <td colSpan={5}>No expenses found</td>
             </tr>
           ) : (
             localExpenses.map((expense) => (
-              <tr key={expense._id}>
+              <tr className={styles.expenseListRow} key={expense._id}>
+                <td>{expense.date.split("T")[0]}</td>
+                <td>${expense.amount}</td>
                 <td>
                   <input
-                    type="date"
-                    value={expense.date.split("T")[0]}
-                    onChange={(e) =>
-                      handleExpenseChange(expense._id, "date", e.target.value)
-                    }
-                  />
-                </td>
-                <td>
-                  <input
-                    type="number"
-                    step="0.01"
-                    value={expense.amount}
-                    onChange={(e) =>
-                      handleExpenseChange(
-                        expense._id,
-                        "amount",
-                        parseFloat(e.target.value) || 0
-                      )
-                    }
-                  />
-                </td>
-                <td>
-                  <input
+                    className={styles.descriptionInput}
                     type="text"
                     value={expense.description}
                     onChange={(e) =>
@@ -165,6 +144,7 @@ const ExpenseList: React.FC<ExpenseListProps> = ({
                 </td>
                 <td>
                   <select
+                    className={styles.categorySelect}
                     value={expense.category || ""}
                     onChange={(e) =>
                       handleExpenseChange(
@@ -183,9 +163,14 @@ const ExpenseList: React.FC<ExpenseListProps> = ({
                   </select>
                 </td>
                 <td>
-                  <button onClick={handleSplitClick(expense)}>Split</button>
                   <button
-                    className={styles.closeButton}
+                    className={styles.expenseActions}
+                    onClick={handleSplitClick(expense)}
+                  >
+                    {"| |"}
+                  </button>
+                  <button
+                    className={styles.expenseActions}
                     onClick={handleDeleteClick(expense._id)}
                   >
                     x
@@ -196,7 +181,11 @@ const ExpenseList: React.FC<ExpenseListProps> = ({
           )}
         </tbody>
       </table>
-      <button onClick={handleSaveClick}>Save</button>
+      <div className={styles.buttonRow}>
+        <button className={styles.expenseActions} onClick={handleSaveClick}>
+          Save
+        </button>
+      </div>
       <SplitExpenseModal
         isOpen={splitModalOpen}
         expenseToSplit={expenseToSplit}

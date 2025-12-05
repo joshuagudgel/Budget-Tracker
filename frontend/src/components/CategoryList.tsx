@@ -45,7 +45,6 @@ const CategoryList: React.FC<CategoryListProps> = ({
 
   const handleSaveClick = async () => {
     try {
-      // collect changed categories
       const changedCategories = localCategories.filter((category) =>
         changedCategoryIds.includes(category._id)
       );
@@ -53,10 +52,8 @@ const CategoryList: React.FC<CategoryListProps> = ({
       if (changedCategories.length === 0) {
         return;
       }
-      // call API for each expense that was changed
       await categoryService.updateCategories(changedCategories);
 
-      // clear changedCategoryIds after successful save
       setChangedCategoryIds([]);
       onCategoriesUpdated?.();
 
@@ -102,7 +99,6 @@ const CategoryList: React.FC<CategoryListProps> = ({
 
   return (
     <div className={styles.categoryList}>
-      <h2>Categories</h2>
       <table>
         <thead>
           <tr>
@@ -118,9 +114,10 @@ const CategoryList: React.FC<CategoryListProps> = ({
             </tr>
           ) : (
             localCategories.map((category) => (
-              <tr key={category._id}>
+              <tr className={styles.categoryListRow} key={category._id}>
                 <td>
                   <input
+                    className={styles.categoryInput}
                     type="text"
                     value={category.name}
                     onChange={(e) =>
@@ -130,6 +127,7 @@ const CategoryList: React.FC<CategoryListProps> = ({
                 </td>
                 <td>
                   <input
+                    className={styles.categoryInput}
                     type="text"
                     value={category.displayName}
                     onChange={(e) =>
@@ -143,6 +141,7 @@ const CategoryList: React.FC<CategoryListProps> = ({
                 </td>
                 <td>
                   <input
+                    className={styles.categoryInput}
                     type="text"
                     value={category.color}
                     onChange={(e) =>
@@ -156,6 +155,7 @@ const CategoryList: React.FC<CategoryListProps> = ({
                 </td>
                 <td>
                   <input
+                    className={styles.categoryInput}
                     type="number"
                     value={category.budgetLimit}
                     onChange={(e) =>
@@ -168,8 +168,11 @@ const CategoryList: React.FC<CategoryListProps> = ({
                   />
                 </td>
                 <td>
-                  <button onClick={() => handleDeleteCategory(category._id)}>
-                    Delete
+                  <button
+                    className={styles.categoryActions}
+                    onClick={() => handleDeleteCategory(category._id)}
+                  >
+                    x
                   </button>
                 </td>
               </tr>
@@ -177,8 +180,14 @@ const CategoryList: React.FC<CategoryListProps> = ({
           )}
         </tbody>
       </table>
-      <button onClick={handleSaveClick}>Save</button>
-      <button onClick={handleAddClick}>Add</button>
+      <div className={styles.buttonRow}>
+        <button className={styles.categoryActions} onClick={handleSaveClick}>
+          Save
+        </button>
+        <button className={styles.categoryActions} onClick={handleAddClick}>
+          Add
+        </button>
+      </div>
       {showAddModal && (
         <AddCategoryModal
           isOpen={showAddModal}

@@ -1,12 +1,7 @@
 .expenseList {
   padding: 20px;
   width: 80%;
-  background-color:#a52a2a;
-  font-size: calc(10px + 1vmin);
-}
-
-.expenseList h2 {
-  text-align: center;
+  background-color: #f5f5f5
 }
 
 .expenseList table {
@@ -14,9 +9,14 @@
   width: 100%;
 }
 
+.expenseListRow:hover {
+  background-color: #efefef
+}
+
 /* Date Column */
 .expenseList th:nth-child(1),
 .expenseList td:nth-child(1) {
+  padding: 8px 12px;
   width: 20%;
   text-align: left;
 }
@@ -24,37 +24,60 @@
 /* Amount Column */
 .expenseList th:nth-child(2),
 .expenseList td:nth-child(2) {
-  width: 20%;
-  text-align: left;
+  padding: 8px 12px;
+  width: 10%;
+  text-align: right;
 }
 
 /* Description Column */
 .expenseList th:nth-child(3),
 .expenseList td:nth-child(3) {
-  width: 20%;
+  padding: 8px 12px;
+  width: 40%;
   text-align: left;
+}
+
+.descriptionInput {
+  width: 100%;
+  box-sizing: border-box;
+  padding:6px 8px;
 }
 
 /* Category Column */
 .expenseList th:nth-child(4),
 .expenseList td:nth-child(4) {
+  padding: 8px 12px;
   width: 250;
   text-align: left;
+}
+
+.categorySelect {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 6px 8px;
 }
 
 /* Split/Delete Column */
 .expenseList th:nth-child(5),
 .expenseList td:nth-child(5) {
-  width: 20%;
+  padding: 8px 12px;
+  width: 10%;
   text-align: left;
 }
 
-.expenseList .closeButton {
+.expenseActions {
   font-size: 24px;
   cursor: pointer;
   color: #666;
 }
 
-.expenseList .closeButton:hover {
+.expenseActions:hover {
   color: #000
+}
+
+.buttonRow {
+  display: flex;
+  gap: 16px;
+  margin-top: 16px;
+  margin-left: 12px;
 }
