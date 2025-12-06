@@ -6,6 +6,7 @@ const { connectDB } = require('./config/database');
 const { seedCategories } = require('./config/seeders');
 const expenseRoutes = require('./routes/expenses');
 const categoryRoutes = require('./routes/categories');
+const backupRoutes = require('./routes/backup');
 
 const app = express();
 const PORT = process.env.PORT;
@@ -31,13 +32,15 @@ app.get('/', (req, res) => {
     message: 'Budget Tracker API is running!',
     endpoints: {
       expenses: '/api/expenses',
-      categories: '/api/categories'
+      categories: '/api/categories',
+      backup: '/api/backup'
     }
   });
 });
 
 app.use('/api/expenses', expenseRoutes);
 app.use('/api/categories', categoryRoutes);
+app.use('/api/backup/', backupRoutes);
 
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);

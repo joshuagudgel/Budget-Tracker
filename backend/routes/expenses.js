@@ -276,4 +276,5 @@ function csvStringToArray (strData) {
 }
 
 module.exports = router;
+// for testing
 module.exports.parseExpenseLine = parseExpenseLine;
