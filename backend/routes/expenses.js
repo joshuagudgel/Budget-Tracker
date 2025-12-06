@@ -2,7 +2,6 @@ const express = require('express');
 const router = express.Router();
 const Expense = require('../models/Expense');
 const multer = require('multer');
-const csvParser = require('csv-parser');
 const fs = require('fs').promises;
 const path = require('path');
 
