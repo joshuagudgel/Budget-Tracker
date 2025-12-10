@@ -1,5 +1,6 @@
 import { Expense, Category } from "../services/api";
 import React, { useMemo, useState } from "react";
+import ExpenseTable from "./ExpenseTable";
 
 interface AnalysisViewProps {
   expenses: Expense[];
@@ -11,61 +12,42 @@ const AnalysisView: React.FC<AnalysisViewProps> = ({
   categories,
 }) => {
   const [selectedYear, setSelectedYear] = useState<string>("2025");
-  const [selectedMonth, setSelectedMonth] = useState<string>("1");
-  const [selectedCategory, setSelectedCategory] = useState<string>("all");
-  const [totalExpenses, setTotalExpenses] = useState<number>(0);
-  const [loading, setLoading] = useState<boolean>(false);
-
-  const months = [
-    { name: "January", number: "1" },
-    { name: "February", number: "2" },
-    { name: "March", number: "3" },
-    { name: "April", number: "4" },
-    { name: "May", number: "5" },
-    { name: "June", number: "6" },
-    { name: "July", number: "7" },
-    { name: "August", number: "8" },
-    { name: "September", number: "9" },
-    { name: "October", number: "10" },
-    { name: "November", number: "11" },
-    { name: "December", number: "12" },
-  ];
   const years = ["2025", "2024"];
 
-  const monthlyExpenses = useMemo(() => {
+  const tableData = useMemo(() => {
     const yearNumber = parseInt(selectedYear, 10);
-    const monthNumber = parseInt(selectedMonth, 10);
 
-    return expenses.filter((expense) => {
-      const dateString = expense.date.split("T")[0];
-      const [year, month] = dateString
-        .split("-")
-        .map((num) => parseInt(num, 10));
-
-      const isCorrectYear = year === yearNumber;
-      const isCorrectMonth = month === monthNumber;
-      const isCorrectCategory =
-        selectedCategory === "all" || expense.category === selectedCategory;
-
-      return isCorrectYear && isCorrectMonth && isCorrectCategory;
+    const yearlyExpenses = expenses.filter((expense) => {
+      const date = new Date(expense.date);
+      return date.getFullYear() === yearNumber;
     });
-  }, [expenses, selectedMonth, selectedCategory, selectedYear]);
 
-  const generateReport = () => {
-    setLoading(true);
-    try {
-      const total = monthlyExpenses.reduce(
-        (sum, expense) => sum + expense.amount,
-        0
-      );
+    // Group by month for table
+    const monthlyTotals = Array.from({ length: 12 }, (_, i) => {
+      const month = i + 1;
+      const monthExpenses = yearlyExpenses.filter((expense) => {
+        const date = new Date(expense.date);
+        return date.getMonth() + 1 === month;
+      });
 
-      setTotalExpenses(total);
-    } catch (error) {
-      console.error("Error generating report:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
+      const categoryBreakdown = categories.reduce((acc, cat) => {
+        acc[cat.name] = monthExpenses
+          .filter((exp) => exp.category === cat.name)
+          .reduce((sum, exp) => sum + exp.amount, 0);
+        return acc;
+      }, {} as Record<string, number>);
+
+      return {
+        month: new Date(yearNumber, i, 1).toLocaleDateString("en-US", {
+          month: "short",
+        }),
+        total: monthExpenses.reduce((sum, exp) => sum + exp.amount, 0),
+        ...categoryBreakdown,
+      };
+    });
+
+    return monthlyTotals;
+  }, [expenses, categories, selectedYear]);
 
   return (
     <div>
@@ -82,38 +64,7 @@ const AnalysisView: React.FC<AnalysisViewProps> = ({
         ))}
       </select>
 
-      <label>Month: </label>
-      <select
-        value={selectedMonth}
-        onChange={(e) => setSelectedMonth(e.target.value)}
-      >
-        {months.map((month) => (
-          <option value={month.number}>{month.name}</option>
-        ))}
-      </select>
-
-      <label>Category: </label>
-      <select
-        value={selectedCategory}
-        onChange={(e) => setSelectedCategory(e.target.value)}
-      >
-        <option value="all">All</option>
-        {categories.map((category) => (
-          <option key={category._id} value={category.name}>
-            {category.displayName}
-          </option>
-        ))}
-      </select>
-
-      <button onClick={generateReport} disabled={loading}>
-        Generate Report
-      </button>
-
-      {totalExpenses > 0 && (
-        <div>
-          <h2>Total Expenses: ${totalExpenses.toFixed(2)}</h2>
-        </div>
-      )}
+      <ExpenseTable data={tableData} categories={categories} />
     </div>
   );
 };
