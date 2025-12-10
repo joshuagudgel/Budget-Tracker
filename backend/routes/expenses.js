@@ -256,8 +256,8 @@ function parseExpenseLine(line, bank) {
     date: dateObj,
     description: description,
     amount: amountNum,
-    category: 'other',
-    paymentMethod: 'credit_card'
+    category: 'unsorted',
+    paymentMethod: 'other'
   }
 }
 
