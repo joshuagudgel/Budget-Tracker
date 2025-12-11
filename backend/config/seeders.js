@@ -39,6 +39,12 @@ const seedCategories = async () => {
           budgetLimit: 100
         },
         {
+          name: 'unsorted',
+          displayName: 'Unsorted',
+          color: '#AAAAAA',
+          budgetLimit: 3000,
+        },
+        {
           name: 'other',
           displayName: 'Other',
           color: '#95A5A6',
