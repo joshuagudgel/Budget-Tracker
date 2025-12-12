@@ -74,11 +74,9 @@ router.get('/:id', async (req, res) => {
 
 // Update by ID
 router.put('/:id', async (req, res) => {
-  console.log("Update request received for ID:", req.params.id);
   try{
     
     const updatedExpense = await Expense.findByIdAndUpdate(req.params.id, req.body, { new: true, runValidators: true });
-    console.log(updatedExpense);
 
     if ( !updatedExpense ) {
       return res.status(404).json({
@@ -114,7 +112,6 @@ router.put('/:id', async (req, res) => {
 
 // Delete by ID
 router.delete('/:id', async (req, res) => {
-  console.log(`Delete by ID Request: ${req.params.id}`);
   try {
     const deletedExpense = await Expense.findByIdAndDelete(req.params.id);
     // error if entry does not exist
