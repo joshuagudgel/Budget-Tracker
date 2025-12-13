@@ -1,5 +1,27 @@
 const Expense = require('../models/Expense');
 
+// validate uploaded file
+const validateCSVFile = (file) => {
+  const errors = [];
+  
+  if (!file) {
+    errors.push('No file provided');
+  }
+  
+  if (file && !file.mimetype.includes('csv') && !file.originalname.endsWith('.csv')) {
+    errors.push('Only CSV files are allowed');
+  }
+  
+  if (file && file.size > 5 * 1024 * 1024) { // 5MB
+    errors.push('File size exceeds 5MB limit');
+  }
+  
+  return {
+    isValid: errors.length === 0,
+    errors
+  };
+};
+
 // Convert csv string to 2-D array (grid format)
 // each row is an array of column values
 function csvStringToArray (strData) {
@@ -111,6 +133,7 @@ const saveExpenses = async (expenses) => {
 };
 
 module.exports = {
+  validateCSVFile,
   csvStringToArray,
   detectBankType,
   parseExpenseLine,

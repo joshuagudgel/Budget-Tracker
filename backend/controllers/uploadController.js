@@ -11,6 +11,15 @@ const processExpenseCSV = async (req, res) => {
     });
   }
 
+  const fileValidation = uploadService.validateCSVFile(req.file);
+  if (!fileValidation.isValid) {
+    await cleanupFile(req.file.path);
+    return res.status(400).json({
+      error: 'File validation failed',
+      message: fileValidation.errors
+    });
+  } 
+
   try {
     // read file as string
     const filePath = path.resolve(req.file.path);
@@ -31,11 +40,9 @@ const processExpenseCSV = async (req, res) => {
     // save to database
     const savedExpenses = await uploadService.saveExpenses(result.expenses);
 
-    console.log("Controller: Saved Expenses ", savedExpenses);
-
     // clean up uploaded file
     await cleanupFile(req.file.path);
-    
+
     res.status(201).json({
       message: 'CSV imported successfully',
       totalLines: result.totalLines,
@@ -43,10 +50,9 @@ const processExpenseCSV = async (req, res) => {
       imported: savedExpenses.length,
       parseErrors: result.parseErrors.length > 0 ? result.parseErrors : undefined
     });
-
   } catch (error) {
     await cleanupFile(req.file.path);
-    
+
     if (error.name === 'ValidationError') {
       return res.status(400).json({ 
         error: 'Data validation failed',

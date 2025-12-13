@@ -7,6 +7,7 @@ const { seedCategories } = require('./config/seeders');
 const expenseRoutes = require('./routes/expenses');
 const categoryRoutes = require('./routes/categories');
 const backupRoutes = require('./routes/backup');
+const uploadRoutes = require('./routes/uploads');
 
 const app = express();
 const PORT = process.env.PORT;
@@ -33,7 +34,8 @@ app.get('/', (req, res) => {
     endpoints: {
       expenses: '/api/expenses',
       categories: '/api/categories',
-      backup: '/api/backup'
+      backup: '/api/backup',
+      upload: '/api/upload'
     }
   });
 });
@@ -41,6 +43,7 @@ app.get('/', (req, res) => {
 app.use('/api/expenses', expenseRoutes);
 app.use('/api/categories', categoryRoutes);
 app.use('/api/backup/', backupRoutes);
+app.use('/api/upload', uploadRoutes);
 
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
