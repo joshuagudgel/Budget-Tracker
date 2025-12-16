@@ -42,8 +42,8 @@ function csvStringToArray (strData) {
 }
 
 // Detect bank type from csv 2-D array data
-// bank1 has "Transaction Date" as first column header
-// bank2 has no header row
+// bank2 has "Transaction Date" as first column header
+// bank1 has no header row
 const detectBankType = (lines) => {
   if (lines.length > 0 && lines[0] && lines[0][0] === 'Transaction Date') {
     console.log("Detected Bank2");
