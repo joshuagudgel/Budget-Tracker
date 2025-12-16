@@ -33,6 +33,11 @@ function csvStringToArray (strData) {
             arrMatches[2].replace(new RegExp( "\"\"", "g" ), "\"") :
             arrMatches[3]);
     }
+
+    if (arrData.length === 1 && arrData[0].length === 0) {
+      throw new Error(`No valid data found in CSV string: "${strData}"`);
+    }
+
     return arrData;
 }
 
@@ -41,16 +46,16 @@ function csvStringToArray (strData) {
 // bank2 has no header row
 const detectBankType = (lines) => {
   if (lines.length > 0 && lines[0] && lines[0][0] === 'Transaction Date') {
-    console.log("Detected Bank1");
-    return 'bank1';
-  } else {
     console.log("Detected Bank2");
     return 'bank2';
+  } else {
+    console.log("Detected Bank1");
+    return 'bank1';
   }
 };
 
 // Parse expense line based on bank format (access indexes directly)
-const parseExpenseLine = (line, bank) => {
+const parseExpenseLine = (line, bankType) => {
   if (!line || line.length === 0) {
     throw new Error('Empty line data');
   }
@@ -58,14 +63,14 @@ const parseExpenseLine = (line, bank) => {
   // Access indexes depending on bank type
   let date, amountStr, description;
   
-  if (bank === 'bank1') {
-    date = line[0];
-    description = line[2];
-    amountStr = line[5];
-  } else if (bank === 'bank2') {
+  if (bankType === 'bank1') {
     date = line[0];
     amountStr = line[1];
     description = line[4];
+  } else if (bankType === 'bank2') {
+    date = line[0];
+    description = line[2];
+    amountStr = line[5];
   } else {
     throw new Error('Invalid Bank Option');
   }
@@ -81,6 +86,8 @@ const parseExpenseLine = (line, bank) => {
     throw new Error(`Invalid date: ${date}`);
   }
 
+  if(line.length > 7) throw new Error(`Line data is too long: ${line}`);
+
   return {
     date: dateObj,
     description: description?.trim() || 'No description',
@@ -91,14 +98,16 @@ const parseExpenseLine = (line, bank) => {
 };
 
 // csvContent is a string
-const processCSVData = (csvContent) => {
+const processCSVData = async (csvContent) => {
   const lines = csvStringToArray(csvContent);
   const bankType = detectBankType(lines);
   const expenses = [];
   const parseErrors = [];
 
-  // skip header row for bank1
-  const startIndex = bankType === 'bank1' ? 1 : 0;
+  const existingSortedExpenses = await checkSortedExpenses();
+
+  // skip header row for bank2
+  const startIndex = bankType === 'bank2' ? 1 : 0;
 
   for (let i = startIndex; i < lines.length; i++) {
     const line = lines[i];
@@ -106,8 +115,8 @@ const processCSVData = (csvContent) => {
 
     try {
       const expense = parseExpenseLine(line, bankType);
-      console.log("parsed expense:", expense);
       if(expense) {
+        expense.category = matchExpenseCategory(expense,existingSortedExpenses);
         expenses.push(expense);
       }
     } catch (lineError) {
@@ -129,8 +138,39 @@ const saveExpenses = async (expenses) => {
     throw new Error('No expenses to save');
   }
 
-  return await Expense.insertMany(expenses, { ordered: false });
+  try {
+    savedExpenses = await Expense.insertMany(expenses, { ordered: false });
+    return savedExpenses;
+  }
+  catch (error){
+    console.error('Error saving expenses:', error.messsage);
+  }
+
+  throw new Error('Some expenses failed to save. Check logs for details.');
 };
+
+// gather existing expenses that have been sorted into a category
+const checkSortedExpenses = async () => {
+  try {
+    const existingExpenses = await Expense.find({
+      category: { $ne: 'unsorted' }
+    }).select('description amount category');
+
+    return existingExpenses;
+  } catch (error) {
+    throw new Error(`Failed to retrieve existing expenses: ${error.message}`);
+  }
+};
+
+// compare description and amount to existing expenses
+const matchExpenseCategory = (newExpense, existingExpenses) => {
+  const match = existingExpenses.find(existing =>
+    existing.description.toLowerCase() === newExpense.description.toLowerCase() &&
+    Math.abs(existing.amount - newExpense.amount) < 0.01
+  );
+
+  return match ? match.category : 'unsorted';
+}
 
 module.exports = {
   validateCSVFile,
