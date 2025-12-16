@@ -2,8 +2,7 @@ const mongoose = require('mongoose');
 
 const expenseSchema = new mongoose.Schema({
   amount: {type: Number,
-    required: [true, 'Amount is required'],
-    min: [0, 'Amount cannot be negative']
+    required: [true, 'Amount is required']
   },
   description: {
     type: String,
@@ -42,5 +41,6 @@ const expenseSchema = new mongoose.Schema({
 // Common indexes for querying expenses
 expenseSchema.index({ date: -1}); // sort by date descending
 expenseSchema.index({ category: 1 }); // filter by category
+expenseSchema.index({ description: 1, amount: 1 });
 
 module.exports = mongoose.model('Expense', expenseSchema);
