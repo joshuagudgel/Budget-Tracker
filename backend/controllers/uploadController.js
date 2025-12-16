@@ -25,7 +25,7 @@ const processExpenseCSV = async (req, res) => {
     const filePath = path.resolve(req.file.path);
     const fileContent = await fs.readFile(filePath, 'utf-8');
 
-    const result = uploadService.processCSVData(fileContent);
+    const result = await uploadService.processCSVData(fileContent);
 
     // validate we have data to process
     if (result.expenses.length === 0) {
