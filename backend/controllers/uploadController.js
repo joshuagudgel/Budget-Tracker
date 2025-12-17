@@ -33,7 +33,7 @@ const processTransactionCSV = async (req, res) => {
       return res.status(400).json({ 
         error: 'No valid data found',
         message: 'CSV file contains no processable transaction data',
-        parseErrors: result.parseErrors
+        parseErrors: transactionData.parseErrors
       });
     }
 
@@ -48,7 +48,7 @@ const processTransactionCSV = async (req, res) => {
       totalLines: transactionData.totalLines,
       parsed: transactionData.transactions.length,
       imported: savedTransactions.length,
-      parseErrors: transactionData.parseErrors.length > 0 ? result.parseErrors : undefined
+      parseErrors: transactionData.parseErrors.length > 0 ? transactionData.parseErrors : undefined
     });
   } catch (error) {
     await cleanupFile(req.file.path);

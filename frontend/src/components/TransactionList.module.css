@@ -1,37 +1,37 @@
-.expenseList {
+.transactionList {
   padding: 20px;
   width: 80%;
   background-color: #f5f5f5
 }
 
-.expenseList table {
+.transactionList table {
   table-layout: fixed;
   width: 100%;
 }
 
-.expenseListRow:hover {
+.transactionListRow:hover {
   background-color: #efefef
 }
 
 /* Date Column */
-.expenseList th:nth-child(1),
-.expenseList td:nth-child(1) {
+.transactionList th:nth-child(1),
+.transactionList td:nth-child(1) {
   padding: 8px 12px;
   width: 15%;
   text-align: left;
 }
 
 /* Amount Column */
-.expenseList th:nth-child(2),
-.expenseList td:nth-child(2) {
+.transactionList th:nth-child(2),
+.transactionList td:nth-child(2) {
   padding: 8px 12px;
   width: 5%;
   text-align: right;
 }
 
 /* Description Column */
-.expenseList th:nth-child(3),
-.expenseList td:nth-child(3) {
+.transactionList th:nth-child(3),
+.transactionList td:nth-child(3) {
   padding: 8px 12px;
   width: 40%;
   text-align: left;
@@ -44,8 +44,8 @@
 }
 
 /* Category Column */
-.expenseList th:nth-child(4),
-.expenseList td:nth-child(4) {
+.transactionList th:nth-child(4),
+.transactionList td:nth-child(4) {
   padding: 8px 12px;
   width: 30%;
   text-align: left;
@@ -58,20 +58,20 @@
 }
 
 /* Split/Delete Column */
-.expenseList th:nth-child(5),
-.expenseList td:nth-child(5) {
+.transactionList th:nth-child(5),
+.transactionList td:nth-child(5) {
   padding: 8px 12px;
   width: 10%;
   text-align: left;
 }
 
-.expenseActions {
+.transactionActions {
   font-size: 24px;
   cursor: pointer;
   color: #666;
 }
 
-.expenseActions:hover {
+.transactionActions:hover {
   color: #000
 }
 

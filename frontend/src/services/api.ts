@@ -1,6 +1,6 @@
 const API_BASE_URL = 'http://localhost:3000/api';
 
-export interface Expense {
+export interface Transaction {
   _id: string;
   amount: number;
   description: string;
@@ -8,60 +8,60 @@ export interface Expense {
   category: string;
 }
 
-export const expenseService = {
-  createExpense: async (expense: Omit<Expense, '_id'>): Promise<Expense> => {
+export const transactionService = {
+  createTransaction: async (transaction: Omit<Transaction, '_id'>): Promise<Transaction> => {
     try {
       const response = await fetch(`${API_BASE_URL}/transactions`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(expense)
+        body: JSON.stringify(transaction)
       });
 
       if (!response.ok) {
-        throw new Error('Failed to create expense');
+        throw new Error('Failed to create transaction');
       }
       return await response.json();
     } catch (error) {
-      console.error('Error creating expense: ', error);
+      console.error('Error creating transaction: ', error);
       throw error;
     }
   },
-  getAllExpenses: async (): Promise<Expense[]> => {
+  getAllTransactions: async (): Promise<Transaction[]> => {
     try {
       const response = await fetch(`${API_BASE_URL}/transactions`);
 
       if (!response.ok) {
-        throw new Error('Failed to fetch expenses');
+        throw new Error('Failed to fetch transactions');
       }
 
-      const data: Expense[] = await response.json();
+      const data: Transaction[] = await response.json();
       return data;
     } catch (error) {
-      console.error('Error fetching expenses:', error);
+      console.error('Error fetching transactions:', error);
       throw error;
     }
   },
-  updateExpenses: async (expenses: Expense[]): Promise<void> => {
-    for (const expense of expenses) {
+  updateTransactions: async (transactions: Transaction[]): Promise<void> => {
+    for (const transaction of transactions) {
       try {
-        await fetch(`${API_BASE_URL}/transactions/${expense._id}`, {
+        await fetch(`${API_BASE_URL}/transactions/${transaction._id}`, {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(expense)
+          body: JSON.stringify(transaction)
         });
       } catch (error) {
-        console.error(`Error updating expense with id ${expense._id}: `, error);
+        console.error(`Error updating transaction with id ${transaction._id}: `, error);
       }
     }
   
   },
-  deleteExpense: async (expenseId: string): Promise<void> => {
+  deleteTransaction: async (transactionId: string): Promise<void> => {
     try {
-      await fetch(`${API_BASE_URL}/transactions/${expenseId}`, {
+      await fetch(`${API_BASE_URL}/transactions/${transactionId}`, {
         method: 'DELETE'
       });
     } catch (error) {
-      console.error(`Error deleting expense with id ${expenseId}: `, error);
+      console.error(`Error deleting transaction with id ${transactionId}: `, error);
     }
   }
 };
@@ -100,7 +100,7 @@ export const categoryService = {
     try{
       const response = await fetch(`${API_BASE_URL}/categories`);
       if (!response.ok) {
-        throw new Error('Failed to fetch expenses');
+        throw new Error('Failed to fetch transactions');
       }
 
       const data: Category[] = await response.json();
@@ -130,7 +130,7 @@ export const categoryService = {
         method: 'DELETE'
       });
     } catch (error) {
-      console.error(`Error deleting expense with id ${categoryId}: `, error);
+      console.error(`Error deleting category with id ${categoryId}: `, error);
     }
   }
 };

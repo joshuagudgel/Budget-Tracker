@@ -1,76 +1,76 @@
 import React, { useState, useEffect } from "react";
-import { Expense, Category } from "../services/api";
-import styles from "./SplitExpenseModal.module.css";
+import { Transaction, Category } from "../services/api";
+import styles from "./SplitTransactionModal.module.css";
 
-interface SplitExpenseModalProps {
+interface SplitTransactionModalProps {
   isOpen: boolean;
-  expenseToSplit: Expense | null;
+  transactionToSplit: Transaction | null;
   categories: Category[];
   onClose: () => void;
   onSplit: (
-    expense1: Omit<Expense, "_id">,
-    expense2: Omit<Expense, "_id">
+    transaction1: Omit<Transaction, "_id">,
+    transaction2: Omit<Transaction, "_id">
   ) => Promise<void>;
 }
 
-const SplitExpenseModal: React.FC<SplitExpenseModalProps> = ({
+const SplitTransactionModal: React.FC<SplitTransactionModalProps> = ({
   isOpen,
-  expenseToSplit,
+  transactionToSplit,
   categories,
   onClose,
   onSplit,
 }) => {
-  const [expense1, setExpense1] = useState({
+  const [transaction1, setTransaction1] = useState({
     amount: 0,
     description: "",
     category: "",
   });
-  const [expense2, setExpense2] = useState({
+  const [transaction2, setTransaction2] = useState({
     amount: 0,
     description: "",
     category: "",
   });
 
-  const totalAmount = expense1.amount + expense2.amount;
-  const originalAmount = expenseToSplit?.amount || 0;
+  const totalAmount = transaction1.amount + transaction2.amount;
+  const originalAmount = transactionToSplit?.amount || 0;
   const isValidSplit = Math.abs(totalAmount - originalAmount) < 0.01;
 
   useEffect(() => {
-    if (expenseToSplit) {
-      const halfAmount = expenseToSplit.amount / 2;
-      setExpense1({
+    if (transactionToSplit) {
+      const halfAmount = transactionToSplit.amount / 2;
+      setTransaction1({
         amount: halfAmount,
-        description: expenseToSplit.description + " (Part 1)",
-        category: expenseToSplit.category,
+        description: transactionToSplit.description + " (Part 1)",
+        category: transactionToSplit.category,
       });
-      setExpense2({
+      setTransaction2({
         amount: halfAmount,
-        description: expenseToSplit.description + " (Part 2)",
-        category: expenseToSplit.category,
+        description: transactionToSplit.description + " (Part 2)",
+        category: transactionToSplit.category,
       });
     }
-  }, [expenseToSplit]);
+  }, [transactionToSplit]);
 
-  // format expense data and send to parent to make requests
+  // format transaction data and send to parent to make requests
   const handleSplit = async () => {
-    if (!expenseToSplit) return;
+    if (!transactionToSplit) return;
 
-    const newExpense1: Omit<Expense, "_id"> = {
-      amount: expense1.amount,
-      description: expense1.description.trim(),
-      category: expense1.category,
-      date: expenseToSplit.date,
+    const newTransaction1: Omit<Transaction, "_id"> = {
+      amount: transaction1.amount,
+      description: transaction1.description.trim(),
+      category: transaction1.category,
+      date: transactionToSplit.date,
     };
 
-    const newExpense2: Omit<Expense, "_id"> = {
-      amount: expense2.amount,
-      description: expense2.description.trim(),
-      category: expense2.category,
-      date: expenseToSplit.date,
+    const newTransaction2: Omit<Transaction, "_id"> = {
+      amount: transaction2.amount,
+      description: transaction2.description.trim(),
+      category: transaction2.category,
+      date: transactionToSplit.date,
     };
 
     try {
-      await onSplit(newExpense1, newExpense2);
+      await onSplit(newTransaction1, newTransaction2);
     } catch (error) {
       console.error("Split operation failed:", error);
     }
@@ -82,30 +82,31 @@ const SplitExpenseModal: React.FC<SplitExpenseModalProps> = ({
     <div className={styles.modalOverlay}>
       <div className={styles.modalContent}>
         <div className={styles.header}>
-          <h3>Split Expense</h3>
+          <h3>Split Transaction</h3>
           <button className={styles.closeButton} onClick={onClose}>
             ×
           </button>
         </div>
-        <div className={styles.expenseSection}>
-          {expenseToSplit && (
+        <div className={styles.transactionSection}>
+          {transactionToSplit && (
             <div>
               <div>
-                <strong>Original:</strong> ${expenseToSplit.amount.toFixed(2)} -{" "}
-                {expenseToSplit.description}
+                <strong>Original:</strong> $
+                {transactionToSplit.amount.toFixed(2)} -{" "}
+                {transactionToSplit.description}
               </div>
 
               <div>
-                <h4>Expense 1</h4>
+                <h4>Transaction 1</h4>
                 <div>
                   <label>Amount</label>
                   <input
                     type="number"
                     step="0.01"
-                    value={expense1.amount}
+                    value={transaction1.amount}
                     onChange={(e) =>
-                      setExpense1({
-                        ...expense1,
+                      setTransaction1({
+                        ...transaction1,
                         amount: parseFloat(e.target.value) || 0,
                       })
                     }
@@ -115,10 +116,10 @@ const SplitExpenseModal: React.FC<SplitExpenseModalProps> = ({
                   <label>Description</label>
                   <input
                     type="text"
-                    value={expense1.description}
+                    value={transaction1.description}
                     onChange={(e) =>
-                      setExpense1({
-                        ...expense1,
+                      setTransaction1({
+                        ...transaction1,
                         description: e.target.value,
                       })
                     }
@@ -127,10 +128,10 @@ const SplitExpenseModal: React.FC<SplitExpenseModalProps> = ({
                 <div>
                   <label>Category</label>
                   <select
-                    value={expense1.category}
+                    value={transaction1.category}
                     onChange={(e) =>
-                      setExpense1({
-                        ...expense1,
+                      setTransaction1({
+                        ...transaction1,
                         category: e.target.value,
                       })
                     }
@@ -145,16 +146,16 @@ const SplitExpenseModal: React.FC<SplitExpenseModalProps> = ({
                 </div>
               </div>
               <div>
-                <h4>Expense 2</h4>
+                <h4>Transaction 2</h4>
                 <div>
                   <label>Amount</label>
                   <input
                     type="number"
                     step="0.01"
-                    value={expense2.amount}
+                    value={transaction2.amount}
                     onChange={(e) =>
-                      setExpense2({
-                        ...expense2,
+                      setTransaction2({
+                        ...transaction2,
                         amount: parseFloat(e.target.value) || 0,
                       })
                     }
@@ -164,10 +165,10 @@ const SplitExpenseModal: React.FC<SplitExpenseModalProps> = ({
                   <label>Description</label>
                   <input
                     type="text"
-                    value={expense2.description}
+                    value={transaction2.description}
                     onChange={(e) =>
-                      setExpense2({
-                        ...expense2,
+                      setTransaction2({
+                        ...transaction2,
                         description: e.target.value,
                       })
                     }
@@ -176,10 +177,10 @@ const SplitExpenseModal: React.FC<SplitExpenseModalProps> = ({
                 <div>
                   <label>Category</label>
                   <select
-                    value={expense2.category}
+                    value={transaction2.category}
                     onChange={(e) =>
-                      setExpense2({
-                        ...expense2,
+                      setTransaction2({
+                        ...transaction2,
                         category: e.target.value,
                       })
                     }
@@ -193,7 +194,8 @@ const SplitExpenseModal: React.FC<SplitExpenseModalProps> = ({
                   </select>
                 </div>
                 <div>
-                  Total: ${(expense1.amount + expense2.amount).toFixed(2)}
+                  Total: $
+                  {(transaction1.amount + transaction2.amount).toFixed(2)}
                 </div>
                 {!isValidSplit && (
                   <div className={styles.validationError}>
@@ -204,7 +206,7 @@ const SplitExpenseModal: React.FC<SplitExpenseModalProps> = ({
               <div className={styles.actions}>
                 <button onClick={onClose}>Cancel</button>
                 <button onClick={handleSplit} disabled={!isValidSplit}>
-                  Split Expense
+                  Split Transaction
                 </button>
               </div>
             </div>
@@ -215,4 +217,4 @@ const SplitExpenseModal: React.FC<SplitExpenseModalProps> = ({
   );
 };
 
-export default SplitExpenseModal;
+export default SplitTransactionModal;

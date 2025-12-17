@@ -1,20 +1,20 @@
 import React, { useState, useEffect } from "react";
 import styles from "./App.module.css";
-import ExpenseList from "./components/ExpenseList";
+import TransactionList from "./components/TransactionList";
 import CategoryList from "./components/CategoryList";
 import AnalysisView from "./components/AnalysisView";
 import NavBar from "./components/NavBar";
 import {
-  expenseService,
+  transactionService,
   categoryService,
-  Expense,
+  Transaction,
   Category,
 } from "./services/api";
 
 function App() {
-  const [currentView, setCurrentView] = useState<string>("Expenses");
+  const [currentView, setCurrentView] = useState<string>("Transactions");
   const [categories, setCategories] = useState<Category[]>([]);
-  const [expenses, setExpenses] = useState<Expense[]>([]);
+  const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -22,12 +22,12 @@ function App() {
     const fetchData = async () => {
       try {
         setLoading(true);
-        const [categoryData, expenseData] = await Promise.all([
+        const [categoryData, transactionData] = await Promise.all([
           categoryService.getAllCategories(),
-          expenseService.getAllExpenses(),
+          transactionService.getAllTransactions(),
         ]);
         setCategories(categoryData);
-        setExpenses(expenseData);
+        setTransactions(transactionData);
       } catch (error) {
         setError("Failed to fetch data");
       } finally {
@@ -46,12 +46,12 @@ function App() {
     }
   };
 
-  const refreshExpenses = async () => {
+  const refreshTransactions = async () => {
     try {
-      const data = await expenseService.getAllExpenses();
-      setExpenses(data);
+      const data = await transactionService.getAllTransactions();
+      setTransactions(data);
     } catch (error) {
-      console.error("Failed to refresh expenses:", error);
+      console.error("Failed to refresh transactions:", error);
     }
   };
 
@@ -66,11 +66,11 @@ function App() {
     <div className={styles.app}>
       <NavBar currentView={currentView} onNavigationChange={handleViewChange} />
       <main className={styles.mainContent}>
-        {currentView === "Expenses" && (
-          <ExpenseList
+        {currentView === "Transactions" && (
+          <TransactionList
             categories={categories}
-            expenses={expenses}
-            onExpensesUpdated={refreshExpenses}
+            transactions={transactions}
+            onTransactionsUpdated={refreshTransactions}
           />
         )}
         {currentView === "Categories" && (
@@ -80,7 +80,7 @@ function App() {
           />
         )}
         {currentView === "Analysis" && (
-          <AnalysisView expenses={expenses} categories={categories} />
+          <AnalysisView expenses={transactions} categories={categories} />
         )}
       </main>
     </div>
