@@ -11,7 +11,7 @@ export interface Expense {
 export const expenseService = {
   createExpense: async (expense: Omit<Expense, '_id'>): Promise<Expense> => {
     try {
-      const response = await fetch(`${API_BASE_URL}/expenses`, {
+      const response = await fetch(`${API_BASE_URL}/transactions`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(expense)
@@ -28,7 +28,7 @@ export const expenseService = {
   },
   getAllExpenses: async (): Promise<Expense[]> => {
     try {
-      const response = await fetch(`${API_BASE_URL}/expenses`);
+      const response = await fetch(`${API_BASE_URL}/transactions`);
 
       if (!response.ok) {
         throw new Error('Failed to fetch expenses');
@@ -44,7 +44,7 @@ export const expenseService = {
   updateExpenses: async (expenses: Expense[]): Promise<void> => {
     for (const expense of expenses) {
       try {
-        await fetch(`${API_BASE_URL}/expenses/${expense._id}`, {
+        await fetch(`${API_BASE_URL}/transactions/${expense._id}`, {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(expense)
@@ -57,7 +57,7 @@ export const expenseService = {
   },
   deleteExpense: async (expenseId: string): Promise<void> => {
     try {
-      await fetch(`${API_BASE_URL}/expenses/${expenseId}`, {
+      await fetch(`${API_BASE_URL}/transactions/${expenseId}`, {
         method: 'DELETE'
       });
     } catch (error) {
