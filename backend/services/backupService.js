@@ -1,10 +1,10 @@
-const Expense = require('../models/Expense');
+const Transaction = require('../models/Transaction');
 const Category = require('../models/Category');
 const fs = require('fs').promises;
 const path = require('path');
 
 const cleanData = (data, type) => {
-  if (type === 'expense') {
+  if (type === 'transaction') {
     return data.map(exp => ({
       amount: exp.amount,
       description: exp.description,
@@ -24,11 +24,11 @@ const cleanData = (data, type) => {
 };
 
 const getBackupData = async () => {
-  const expenses = await Expense.find().sort({ date: -1 });
+  const transactions = await Transaction.find().sort({ date: -1 });
   const categories = await Category.find();
 
   return {
-    expenses: cleanData(expenses, 'expense'),
+    transactions: cleanData(transactions, 'transaction'),
     categories: cleanData(categories, 'category')
   };
 };

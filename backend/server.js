@@ -4,7 +4,7 @@ require('dotenv').config();
 
 const { connectDB } = require('./config/database');
 const { seedCategories } = require('./config/seeders');
-const expenseRoutes = require('./routes/expenses');
+const transactionRoutes = require('./routes/transactions');
 const categoryRoutes = require('./routes/categories');
 const backupRoutes = require('./routes/backup');
 const uploadRoutes = require('./routes/uploads');
@@ -32,7 +32,7 @@ app.get('/', (req, res) => {
   res.json({ 
     message: 'Budget Tracker API is running!',
     endpoints: {
-      expenses: '/api/expenses',
+      transactions: '/api/transactions',
       categories: '/api/categories',
       backup: '/api/backup',
       upload: '/api/upload'
@@ -40,7 +40,7 @@ app.get('/', (req, res) => {
   });
 });
 
-app.use('/api/expenses', expenseRoutes);
+app.use('/api/transactions', transactionRoutes);
 app.use('/api/categories', categoryRoutes);
 app.use('/api/backup/', backupRoutes);
 app.use('/api/upload', uploadRoutes);

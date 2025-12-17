@@ -1,11 +1,11 @@
-const Expense = require('../models/Expense');
+const Transaction = require('../models/Transaction');
 
-// Create expense
+// Create transaction
 const create = async (req, res) => {
   try {
-    const expense = new Expense(req.body);
-    const savedExpense = await expense.save();
-    res.status(201).json(savedExpense);
+    const transaction = new Transaction(req.body);
+    const savedTransaction = await transaction.save();
+    res.status(201).json(savedTransaction);
   } catch (error) {
     if (error.name === 'ValidationError') {
       const errors = Object.values(error.errors).map(err => err.message);
@@ -18,57 +18,57 @@ const create = async (req, res) => {
   }
 };
 
-// Get all expenses
+// Get all transactions
 const getAll = async (req, res) => {
   try {
-    const expenses = await Expense.find().sort({ date: -1 });
-    return res.status(200).json(expenses);
+    const transactions = await Transaction.find().sort({ date: -1 });
+    return res.status(200).json(transactions);
   } catch (error) {
     return res.status(500).json({ error: 'Internal Server Error' });
   }
 };
 
-// Get expense by ID
+// Get transaction by ID
 const getById = async (req, res) => {
   try {
-    const expense = await Expense.findById(req.params.id);
-    if (!expense) {
+    const transaction = await Transaction.findById(req.params.id);
+    if (!transaction) {
       return res.status(404).json({ 
-        error: 'Expense not found',
-        message: `No expense found with ID: ${req.params.id}`
+        error: 'Transaction not found',
+        message: `No transaction found with ID: ${req.params.id}`
       });
     }
-    return res.status(200).json(expense);
+    return res.status(200).json(transaction);
   } catch (error) {
     if (error.name === 'CastError') {
       return res.status(400).json({ 
         error: 'Invalid ID format',
-        message: 'Please provide a valid expense ID'
+        message: 'Please provide a valid transaction ID'
       });
     }
     return res.status(500).json({ error: 'Internal Server Error' });
   }
 };
 
-// Update expense by ID
+// Update transaction by ID
 const updateById = async (req, res) => {
   try {
-    const updatedExpense = await Expense.findByIdAndUpdate(
+    const updatedTransaction = await Transaction.findByIdAndUpdate(
       req.params.id, 
       req.body, 
       { new: true, runValidators: true }
     );
 
-    if (!updatedExpense) {
+    if (!updatedTransaction) {
       return res.status(404).json({
-        error: "Expense not found",
-        message: `No expense found with ID: ${req.params.id}`
+        error: "Transaction not found",
+        message: `No transaction found with ID: ${req.params.id}`
       });
     }
 
     res.status(200).json({
-      message: 'Expense updated successfully',
-      expense: updatedExpense
+      message: 'Transaction updated successfully',
+      transaction: updatedTransaction
     });
   } catch (error) {
     if (error.name === 'ValidationError') {
@@ -81,27 +81,27 @@ const updateById = async (req, res) => {
     if (error.name === 'CastError') {
       return res.status(400).json({ 
         error: 'Invalid ID format',
-        message: 'Please provide a valid expense ID'
+        message: 'Please provide a valid transaction ID'
       });
     }
     return res.status(500).json({ error: 'Internal Server Error' });
   }
 };
 
-// Delete expense by ID
+// Delete transaction by ID
 const deleteById = async (req, res) => {
   try {
-    const deletedExpense = await Expense.findByIdAndDelete(req.params.id);
-    if (!deletedExpense) {
+    const deletedTransaction = await Transaction.findByIdAndDelete(req.params.id);
+    if (!deletedTransaction) {
       return res.status(404).json({
-        message: `No expense found with ID: ${req.params.id}`,
-        error: 'Expense not found'
+        message: `No transaction found with ID: ${req.params.id}`,
+        error: 'Transaction not found'
       });
     }
 
     return res.status(200).json({
-      message: 'Expense deleted successfully',
-      expense: deletedExpense
+      message: 'Transaction deleted successfully',
+      transaction: deletedTransaction
     });
   } catch (error) {
     if (error.name === 'ValidationError') {

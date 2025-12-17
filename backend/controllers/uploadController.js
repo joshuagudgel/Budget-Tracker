@@ -2,8 +2,8 @@ const fs = require('fs').promises;
 const path = require('path');
 const uploadService = require('../services/uploadService');
 
-// Process CSV file and create expenses
-const processExpenseCSV = async (req, res) => {
+// Process CSV file and create transactions
+const processTransactionCSV = async (req, res) => {
   if (!req.file) {
     return res.status(400).json({ 
       error: 'File upload failed',
@@ -25,30 +25,30 @@ const processExpenseCSV = async (req, res) => {
     const filePath = path.resolve(req.file.path);
     const fileContent = await fs.readFile(filePath, 'utf-8');
 
-    const result = await uploadService.processCSVData(fileContent);
+    const transactionData = await uploadService.processCSVData(fileContent);
 
     // validate we have data to process
-    if (result.expenses.length === 0) {
+    if (transactionData.transactions.length === 0) {
       await cleanupFile(req.file.path);
       return res.status(400).json({ 
         error: 'No valid data found',
-        message: 'CSV file contains no processable expense data',
+        message: 'CSV file contains no processable transaction data',
         parseErrors: result.parseErrors
       });
     }
 
     // save to database
-    const savedExpenses = await uploadService.saveExpenses(result.expenses);
+    const savedTransactions = await uploadService.saveTransactions(transactionData.transactions);
 
     // clean up uploaded file
     await cleanupFile(req.file.path);
 
     res.status(201).json({
       message: 'CSV imported successfully',
-      totalLines: result.totalLines,
-      parsed: result.expenses.length,
-      imported: savedExpenses.length,
-      parseErrors: result.parseErrors.length > 0 ? result.parseErrors : undefined
+      totalLines: transactionData.totalLines,
+      parsed: transactionData.transactions.length,
+      imported: savedTransactions.length,
+      parseErrors: transactionData.parseErrors.length > 0 ? result.parseErrors : undefined
     });
   } catch (error) {
     await cleanupFile(req.file.path);
@@ -79,5 +79,5 @@ const cleanupFile = async (filePath) => {
 };
 
 module.exports = {
-  processExpenseCSV
+  processTransactionCSV
 };

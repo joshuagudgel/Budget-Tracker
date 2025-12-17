@@ -1,4 +1,4 @@
-const Expense = require('../models/Expense');
+const Transaction = require('../models/Transaction');
 
 // validate uploaded file
 const validateCSVFile = (file) => {
@@ -54,11 +54,13 @@ const detectBankType = (lines) => {
   }
 };
 
-// Parse expense line based on bank format (access indexes directly)
-const parseExpenseLine = (line, bankType) => {
+// Parse transaction line based on bank format (access indexes directly)
+const parseTransactionLine = (line, bankType) => {
   if (!line || line.length === 0) {
     throw new Error('Empty line data');
   }
+
+  if(line.length > 7) throw new Error(`Line data is improperly formatted: ${line}`);
 
   // Access indexes depending on bank type
   let date, amountStr, description;
@@ -86,14 +88,11 @@ const parseExpenseLine = (line, bankType) => {
     throw new Error(`Invalid date: ${date}`);
   }
 
-  if(line.length > 7) throw new Error(`Line data is too long: ${line}`);
-
   return {
     date: dateObj,
     description: description?.trim() || 'No description',
     amount: amountNum,
-    category: 'unsorted',
-    paymentMethod: 'other'
+    category: 'unsorted'
   };
 };
 
@@ -101,10 +100,10 @@ const parseExpenseLine = (line, bankType) => {
 const processCSVData = async (csvContent) => {
   const lines = csvStringToArray(csvContent);
   const bankType = detectBankType(lines);
-  const expenses = [];
+  const transactions = [];
   const parseErrors = [];
 
-  const existingSortedExpenses = await checkSortedExpenses();
+  const existingSortedTransactions = await checkSortedTransactions();
 
   // skip header row for bank2
   const startIndex = bankType === 'bank2' ? 1 : 0;
@@ -114,10 +113,10 @@ const processCSVData = async (csvContent) => {
     if (!line || line.length === 0) continue;
 
     try {
-      const expense = parseExpenseLine(line, bankType);
-      if(expense) {
-        expense.category = matchExpenseCategory(expense,existingSortedExpenses);
-        expenses.push(expense);
+      const transaction = parseTransactionLine(line, bankType);
+      if(transaction) {
+        transaction.category = matchTransactionCategory(transaction,existingSortedTransactions);
+        transactions.push(transaction);
       }
     } catch (lineError) {
       parseErrors.push(`Line ${i + 1}: '${line}' Error: ${lineError.message}`);
@@ -125,7 +124,7 @@ const processCSVData = async (csvContent) => {
   }
 
   return {
-    expenses,
+    transactions,
     parseErrors,
     bankType,
     totalLines: lines.length
@@ -133,40 +132,40 @@ const processCSVData = async (csvContent) => {
 };
 
 // save to database
-const saveExpenses = async (expenses) => {
-  if(!expenses || expenses.length === 0) {
-    throw new Error('No expenses to save');
+const saveTransactions = async (transactions) => {
+  if(!transactions || transactions.length === 0) {
+    throw new Error('No transactions to save');
   }
 
   try {
-    savedExpenses = await Expense.insertMany(expenses, { ordered: false });
-    return savedExpenses;
+    savedTransactions = await Transaction.insertMany(transactions, { ordered: false });
+    return savedTransactions;
   }
   catch (error){
-    console.error('Error saving expenses:', error.messsage);
+    console.error('Error saving transactions:', error.messsage);
   }
 
-  throw new Error('Some expenses failed to save. Check logs for details.');
+  throw new Error('Some transactions failed to save. Check logs for details.');
 };
 
-// gather existing expenses that have been sorted into a category
-const checkSortedExpenses = async () => {
+// gather existing transactions that have been sorted into a category
+const checkSortedTransactions = async () => {
   try {
-    const existingExpenses = await Expense.find({
+    const existingTransactions = await Transaction.find({
       category: { $ne: 'unsorted' }
     }).select('description amount category');
 
-    return existingExpenses;
+    return existingTransactions;
   } catch (error) {
-    throw new Error(`Failed to retrieve existing expenses: ${error.message}`);
+    throw new Error(`Failed to retrieve existing transactions: ${error.message}`);
   }
 };
 
-// compare description and amount to existing expenses
-const matchExpenseCategory = (newExpense, existingExpenses) => {
-  const match = existingExpenses.find(existing =>
-    existing.description.toLowerCase() === newExpense.description.toLowerCase() &&
-    Math.abs(existing.amount - newExpense.amount) < 0.01
+// compare description and amount to existing transactions
+const matchTransactionCategory = (newTransaction, existingTransactions) => {
+  const match = existingTransactions.find(existing =>
+    existing.description.toLowerCase() === newTransaction.description.toLowerCase() &&
+    Math.abs(existing.amount - newTransaction.amount) < 0.01
   );
 
   return match ? match.category : 'unsorted';
@@ -176,7 +175,7 @@ module.exports = {
   validateCSVFile,
   csvStringToArray,
   detectBankType,
-  parseExpenseLine,
+  parseTransactionLine,
   processCSVData,
-  saveExpenses
+  saveTransactions
 };

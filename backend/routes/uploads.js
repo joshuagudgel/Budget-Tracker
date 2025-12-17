@@ -4,6 +4,6 @@ const uploadController = require('../controllers/uploadController');
 const { csvUpload } = require('../middleware/upload');
 
 // CSV upload routes
-router.post('/expenses', csvUpload.single('file'), uploadController.processExpenseCSV);
+router.post('/transactions', csvUpload.single('file'), uploadController.processTransactionCSV);
 
 module.exports = router;
