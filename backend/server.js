@@ -12,6 +12,8 @@ const uploadRoutes = require('./routes/uploads');
 const app = express();
 const PORT = process.env.PORT;
 
+app.use(express.json({ limit: '10mb' }));
+
 // Connect to Database
 const initializeApp = async () => {
   await connectDB();

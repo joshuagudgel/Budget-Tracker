@@ -18,6 +18,26 @@ const create = async (req, res) => {
   }
 };
 
+// Create transactions
+const createMany = async (req, res) => {
+  try {
+    if (!Array.isArray(req.body) || req.body.length === 0) {
+      return res.status(400).json({
+        error: 'Validation failed',
+        message: 'Request body must be a non-empty array of transactions'
+      });
+    }
+
+    const savedTransactions = await transactions.insertMany(req.body, {ordered: false});
+    return res.status(201).json({
+      message: 'Transactions created successfully',
+      transactions: savedTransactions
+    });
+  } catch (error) {
+    console.error(`Failed to create transactions`);
+  }
+}
+
 // Get all transactions
 const getAll = async (req, res) => {
   try {
@@ -117,6 +137,7 @@ const deleteById = async (req, res) => {
 
 module.exports = {
   create,
+  createMany,
   getAll,
   getById,
   updateById,

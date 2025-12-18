@@ -131,7 +131,36 @@ export const categoryService = {
         method: 'DELETE'
       });
     } catch (error) {
-      console.error(`Error deleting category with id ${categoryId}: `, error);
+      console.error(`Error deleting category with id ${categoryId}: ${error}`);
     }
   }
 };
+
+export const UploadService = {
+  uploadTransactions: async (file: File): Promise<{
+    message: string;
+    totalLines: number;
+    bankType: number;
+    parseErrors: string[];
+  }> => {
+    try {
+      const formData = new FormData();
+      formData.append('file', file);
+
+      const response = await fetch(`${API_BASE_URL}/upload/transactions`, {
+        method: 'POST',
+        body: formData,
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Failed to upload transactions');
+      }
+
+      return await response.json();
+    } catch (error) {
+      console.error(`Error uploading transactions: ${error}`);
+      throw error;
+    }
+  }
+}

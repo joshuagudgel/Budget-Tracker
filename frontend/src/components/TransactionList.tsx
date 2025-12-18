@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Transaction, Category, transactionService } from "../services/api";
 import styles from "./TransactionList.module.css";
 import SplitTransactionModal from "./SplitTransactionModal";
+import UploadTransactionsModal from "./UploadTransactionsModal";
 
 interface TransactionListProps {
   categories: Category[];
@@ -20,6 +21,7 @@ const TransactionList: React.FC<TransactionListProps> = ({
     []
   );
   const [splitModalOpen, setSplitModalOpen] = useState<boolean>(false);
+  const [uploadModalOpen, setUploadModalOpen] = useState<boolean>(false);
   const [transactionToSplit, setTransactionToSplit] =
     useState<Transaction | null>(null);
   const transactionHeaders = [
@@ -100,6 +102,10 @@ const TransactionList: React.FC<TransactionListProps> = ({
     setSplitModalOpen(true);
   };
 
+  const handleUploadClick = () => {
+    setUploadModalOpen(true);
+  };
+
   const handleSplitTransaction = async (
     transaction1: Omit<Transaction, "_id">,
     transaction2: Omit<Transaction, "_id">
@@ -124,6 +130,17 @@ const TransactionList: React.FC<TransactionListProps> = ({
 
   return (
     <div className={styles.transactionList}>
+      <div className={styles.buttonRow}>
+        <button className={styles.transactionActions} onClick={handleSaveClick}>
+          Save
+        </button>
+        <button
+          className={styles.transactionActions}
+          onClick={handleUploadClick}
+        >
+          Upload
+        </button>
+      </div>
       <table>
         <thead>
           <tr>
@@ -218,11 +235,6 @@ const TransactionList: React.FC<TransactionListProps> = ({
           )}
         </tbody>
       </table>
-      <div className={styles.buttonRow}>
-        <button className={styles.transactionActions} onClick={handleSaveClick}>
-          Save
-        </button>
-      </div>
       <SplitTransactionModal
         isOpen={splitModalOpen}
         transactionToSplit={transactionToSplit}
@@ -232,6 +244,12 @@ const TransactionList: React.FC<TransactionListProps> = ({
           setTransactionToSplit(null);
         }}
         onSplit={handleSplitTransaction}
+      />
+      <UploadTransactionsModal
+        isOpen={uploadModalOpen}
+        onClose={() => {
+          setUploadModalOpen(false);
+        }}
       />
     </div>
   );
