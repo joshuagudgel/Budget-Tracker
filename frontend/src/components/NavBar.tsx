@@ -14,11 +14,11 @@ const NavBar: React.FC<NavBarProps> = ({ currentView, onNavigationChange }) => {
         <div className={styles.navItems}>
           <p
             className={`${styles.navItem} ${
-              currentView === "Expenses" ? styles.navItemActive : ""
+              currentView === "Transactions" ? styles.navItemActive : ""
             }`}
-            onClick={() => onNavigationChange("Expenses")}
+            onClick={() => onNavigationChange("Transactions")}
           >
-            Expenses
+            Transactions
           </p>
           <p
             className={`${styles.navItem} ${
