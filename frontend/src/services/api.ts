@@ -6,6 +6,7 @@ export interface Transaction {
   description: string;
   date: string;
   category: string;
+  transactionType: string;
 }
 
 export const transactionService = {

@@ -47,7 +47,7 @@
 .transactionList th:nth-child(4),
 .transactionList td:nth-child(4) {
   padding: 8px 12px;
-  width: 30%;
+  width: 15%;
   text-align: left;
 }
 
@@ -57,9 +57,23 @@
   padding: 6px 8px;
 }
 
-/* Split/Delete Column */
+/* Transaction Type Column */
 .transactionList th:nth-child(5),
 .transactionList td:nth-child(5) {
+  padding: 8px 12px;
+  width: 15%;
+  text-align: left;
+}
+
+.transactionTypeSelect {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 6px 8px;
+}
+
+/* Split/Delete Column */
+.transactionList th:nth-child(6),
+.transactionList td:nth-child(6) {
   padding: 8px 12px;
   width: 10%;
   text-align: left;

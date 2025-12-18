@@ -60,6 +60,7 @@ const SplitTransactionModal: React.FC<SplitTransactionModalProps> = ({
       description: transaction1.description.trim(),
       category: transaction1.category,
       date: transactionToSplit.date,
+      transactionType: transactionToSplit.transactionType,
     };
 
     const newTransaction2: Omit<Transaction, "_id"> = {
@@ -67,6 +68,7 @@ const SplitTransactionModal: React.FC<SplitTransactionModalProps> = ({
       description: transaction2.description.trim(),
       category: transaction2.category,
       date: transactionToSplit.date,
+      transactionType: transactionToSplit.transactionType,
     };
 
     try {

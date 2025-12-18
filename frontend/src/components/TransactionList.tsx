@@ -27,7 +27,13 @@ const TransactionList: React.FC<TransactionListProps> = ({
     "Amount",
     "Description",
     "Category",
+    "Type",
     "Split/Delete",
+  ];
+  const transactionTypeOptions = [
+    { value: "expense", displayName: "Expense" },
+    { value: "income", displayName: "Income" },
+    { value: "transfer", displayName: "Transfer" },
   ];
 
   useEffect(() => {
@@ -166,6 +172,29 @@ const TransactionList: React.FC<TransactionListProps> = ({
                     {categories.map((category) => (
                       <option key={category._id} value={category.name}>
                         {category.displayName}
+                      </option>
+                    ))}
+                  </select>
+                </td>
+                <td>
+                  <select
+                    className={styles.transactionTypeSelect}
+                    value={transaction.transactionType || ""}
+                    onChange={(e) =>
+                      handleTransactionChange(
+                        transaction._id,
+                        "transactionType",
+                        e.target.value
+                      )
+                    }
+                  >
+                    <option value="">Select Type</option>
+                    {transactionTypeOptions.map((transactionType) => (
+                      <option
+                        key={transactionType.value}
+                        value={transactionType.value}
+                      >
+                        {transactionType.displayName}
                       </option>
                     ))}
                   </select>

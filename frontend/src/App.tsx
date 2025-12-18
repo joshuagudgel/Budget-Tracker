@@ -80,7 +80,7 @@ function App() {
           />
         )}
         {currentView === "Analysis" && (
-          <AnalysisView expenses={transactions} categories={categories} />
+          <AnalysisView transactions={transactions} categories={categories} />
         )}
       </main>
     </div>
