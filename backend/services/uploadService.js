@@ -78,7 +78,7 @@ const parseTransactionLine = (line, bankType) => {
   }
 
   // Validate and parse amount
-  const amountNum = (-1) * parseFloat(amountStr);
+  const amountNum = parseFloat(amountStr);
   if (isNaN(amountNum)) {
     throw new Error(`Invalid amount: ${amountStr}`);
   }
