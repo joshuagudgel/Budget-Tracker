@@ -5,12 +5,13 @@ const path = require('path');
 
 const cleanData = (data, type) => {
   if (type === 'transaction') {
-    return data.map(exp => ({
-      amount: exp.amount,
-      description: exp.description,
-      date: exp.date,
-      category: exp.category,
-      paymentMethod: exp.paymentMethod
+    return data.map(transaction => ({
+      amount: transaction.amount,
+      description: transaction.description,
+      date: transaction.date,
+      category: transaction.category,
+      paymentMethod: transaction.paymentMethod,
+      transactionType: transaction.transactionType
     }));
   } else if (type === 'category') {
     return data.map(cat => ({
