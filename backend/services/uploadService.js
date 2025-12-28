@@ -70,7 +70,7 @@ const parseTransactionLine = (line, bankType) => {
     amountStr = line[1];
     description = line[4];
   } else if (bankType === 'bank2') {
-    date = line[1];
+    date = line[0];
     description = line[2];
     amountStr = line[5];
   } else {

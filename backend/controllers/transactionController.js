@@ -28,7 +28,7 @@ const createMany = async (req, res) => {
       });
     }
 
-    const savedTransactions = await transactions.insertMany(req.body, {ordered: false});
+    const savedTransactions = await Transaction.insertMany(req.body, {ordered: false});
     return res.status(201).json({
       message: 'Transactions created successfully',
       transactions: savedTransactions
