@@ -21,42 +21,77 @@ const SplitTransactionModal: React.FC<SplitTransactionModalProps> = ({
   onSplit,
 }) => {
   const [transaction1, setTransaction1] = useState({
-    amount: 0,
+    amount: "",
     description: "",
     category: "",
   });
   const [transaction2, setTransaction2] = useState({
-    amount: 0,
+    amount: "",
     description: "",
     category: "",
   });
 
-  const totalAmount = transaction1.amount + transaction2.amount;
   const originalAmount = transactionToSplit?.amount || 0;
+
+  const parseAmount = (value: string): number => {
+    if (value === "" || value === "-") return 0;
+    const parsed = parseFloat(value);
+    return isNaN(parsed) ? 0 : parsed;
+  };
+
+  const amount1Number = parseAmount(transaction1.amount);
+  const amount2Number = parseAmount(transaction2.amount);
+  const totalAmount = amount1Number + amount2Number;
   const isValidSplit = Math.abs(totalAmount - originalAmount) < 0.01;
 
   useEffect(() => {
     if (transactionToSplit) {
       const halfAmount = transactionToSplit.amount / 2;
       setTransaction1({
-        amount: halfAmount,
+        amount: halfAmount.toString(),
         description: transactionToSplit.description + " (Part 1)",
         category: transactionToSplit.category,
       });
       setTransaction2({
-        amount: halfAmount,
+        amount: halfAmount.toString(),
         description: transactionToSplit.description + " (Part 2)",
         category: transactionToSplit.category,
       });
     }
   }, [transactionToSplit]);
 
+  // handle amount 1 change
+  const handleAmount1Change = (amount1: string) => {
+    setTransaction1({ ...transaction1, amount: amount1 });
+
+    if (amount1 !== "" && amount1 !== "-") {
+      const newAmount1 = parseFloat(amount1);
+      if (!isNaN(newAmount1)) {
+        const newAmount2 = originalAmount - newAmount1;
+        setTransaction2({ ...transaction2, amount: newAmount2.toString() });
+      }
+    }
+  };
+
+  // handle amount 2 change
+  const handleAmount2Change = (amount2: string) => {
+    setTransaction2({ ...transaction2, amount: amount2 });
+
+    if (amount2 !== "" && amount2 !== "-") {
+      const newAmount2 = parseFloat(amount2);
+      if (!isNaN(newAmount2)) {
+        const newAmount1 = originalAmount - newAmount2;
+        setTransaction1({ ...transaction1, amount: newAmount1.toString() });
+      }
+    }
+  };
+
   // format transaction data and send to parent to make requests
   const handleSplit = async () => {
     if (!transactionToSplit) return;
 
     const newTransaction1: Omit<Transaction, "_id"> = {
-      amount: transaction1.amount,
+      amount: amount1Number,
       description: transaction1.description.trim(),
       category: transaction1.category,
       date: transactionToSplit.date,
@@ -64,7 +99,7 @@ const SplitTransactionModal: React.FC<SplitTransactionModalProps> = ({
     };
 
     const newTransaction2: Omit<Transaction, "_id"> = {
-      amount: transaction2.amount,
+      amount: amount2Number,
       description: transaction2.description.trim(),
       category: transaction2.category,
       date: transactionToSplit.date,
@@ -106,12 +141,7 @@ const SplitTransactionModal: React.FC<SplitTransactionModalProps> = ({
                     type="number"
                     step="0.01"
                     value={transaction1.amount}
-                    onChange={(e) =>
-                      setTransaction1({
-                        ...transaction1,
-                        amount: parseFloat(e.target.value) || 0,
-                      })
-                    }
+                    onChange={(e) => handleAmount1Change(e.target.value)}
                   />
                 </div>
                 <div>
@@ -155,12 +185,7 @@ const SplitTransactionModal: React.FC<SplitTransactionModalProps> = ({
                     type="number"
                     step="0.01"
                     value={transaction2.amount}
-                    onChange={(e) =>
-                      setTransaction2({
-                        ...transaction2,
-                        amount: parseFloat(e.target.value) || 0,
-                      })
-                    }
+                    onChange={(e) => handleAmount2Change(e.target.value)}
                   />
                 </div>
                 <div>
@@ -195,10 +220,7 @@ const SplitTransactionModal: React.FC<SplitTransactionModalProps> = ({
                     ))}
                   </select>
                 </div>
-                <div>
-                  Total: $
-                  {(transaction1.amount + transaction2.amount).toFixed(2)}
-                </div>
+                <div>Total: ${totalAmount.toFixed(2)}</div>
                 {!isValidSplit && (
                   <div className={styles.validationError}>
                     Split amounts must equal original amount
