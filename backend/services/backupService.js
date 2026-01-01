@@ -48,8 +48,40 @@ const exportBackup = async () => {
   return { filename, filePath };
 };
 
+const restoreFromBackup = async (backupData) => {
+  try{
+    console.log(`Starting restore with ${backupData.transactions.length} transactions`);
+
+    // clear current transactions and categories
+    const deleteTResult = await Transaction.deleteMany({});
+    const deleteCResult = await Category.deleteMany({});
+
+    console.log(`Deleted ${deleteTResult.deletedCount} existing transactions`);
+    console.log(`Deleted ${deleteCResult.deletedCount} existing categories`);
+
+    // save new
+    const restoredTransactions = await Transaction.insertMany(backupData.transactions);
+    const restoredCategories = await Category.insertMany(backupData.categories);
+    
+    console.log(`Restored ${restoredTransactions.length} transactions`);
+    console.log(`Restored ${restoredCategories.length} transactions`);
+
+    return {
+      transactionsDeletedCount: deleteTResult.deletedCount, 
+      categoriesDeletedCount: deleteCResult.deletedCount, 
+      restoredTransactions, 
+      restoredCategories
+    };
+  }
+  catch (error) {
+    console.error("Failed to restore from backup", error);
+    throw new Error(`Failed to restore from backup: ${error.message}`);
+  }
+}
+
 module.exports = {
   cleanData,
   getBackupData,
-  exportBackup
+  exportBackup,
+  restoreFromBackup
 };

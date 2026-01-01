@@ -35,7 +35,36 @@ const exportBackup = async (req, res) => {
   }
 };
 
+// restore from backup
+const restoreFromBackup = async (req, res) => {
+  try{
+    // validate backup structure 
+    console.log(req.body);
+    if(!req.body.transactions || !req.body.categories){
+      return res.status(400).json({
+        error: 'Invalid backup',
+        message: 'Backup must contain transactions and categories data'
+      });
+    }
+
+    const result = await backupService.restoreFromBackup(req.body);
+
+    return res.status(200).json({
+      message:'Backup restored successfully',
+      ...result
+    });
+  }
+  catch(error){
+    console.error('Restore error:', error);
+    return res.status(500).json({
+      error: 'Failed to restore from backup',
+      message: error.message
+    });
+  }
+}
+
 module.exports = {
   getBackupData,
-  exportBackup
+  exportBackup,
+  restoreFromBackup
 };

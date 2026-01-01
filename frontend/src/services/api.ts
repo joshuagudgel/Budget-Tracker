@@ -163,4 +163,37 @@ export const UploadService = {
       throw error;
     }
   }
-}
+};
+
+export const BackupService = {
+  restoreFromBackup: async (file: File): Promise<{
+    message: string,
+    transactionsDeletedCount: number,
+    categoriesDeletedCount: number,
+    transactionsRestored: Transaction[],
+    categoriesRestored: Category[]
+  }> => {
+    try {
+      const fileContent = await file.text();
+      const backupData = JSON.parse(fileContent);
+
+      const response = await fetch(`${API_BASE_URL}/backup/restore`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(backupData),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Failed to restore backup data');
+      }
+
+      return await response.json();
+    } catch (error) {
+      console.error(`Error restoring backup data: ${error}`);
+      throw error;
+    }
+  }
+};
