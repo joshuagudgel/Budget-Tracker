@@ -62,3 +62,6 @@ Thumbs.db
 
 # Backup files
 backend/backups/
+
+# Note files
+.txt
