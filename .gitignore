@@ -64,4 +64,4 @@ Thumbs.db
 backend/backups/
 
 # Note files
-.txt
+*.txt
