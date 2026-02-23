@@ -11,9 +11,9 @@ const AnalysisView: React.FC<AnalysisViewProps> = ({
   transactions,
   categories,
 }) => {
-  const [selectedYear, setSelectedYear] = useState<string>("2025");
+  const [selectedYear, setSelectedYear] = useState<string>("2026");
   const [selectedType, setSelectedType] = useState<string>("expense");
-  const years = ["2025", "2024"];
+  const years = ["2026", "2025", "2024"];
   const transactionTypeOptions = [
     { value: "expense", displayName: "Expenses" },
     { value: "income", displayName: "Income" },
@@ -40,12 +40,15 @@ const AnalysisView: React.FC<AnalysisViewProps> = ({
         return date.getMonth() + 1 === month;
       });
 
-      const categoryBreakdown = categories.reduce((acc, cat) => {
-        acc[cat.name] = monthTransactions
-          .filter((exp) => exp.category === cat.name)
-          .reduce((sum, exp) => sum + exp.amount, 0);
-        return acc;
-      }, {} as Record<string, number>);
+      const categoryBreakdown = categories.reduce(
+        (acc, cat) => {
+          acc[cat.name] = monthTransactions
+            .filter((exp) => exp.category === cat.name)
+            .reduce((sum, exp) => sum + exp.amount, 0);
+          return acc;
+        },
+        {} as Record<string, number>,
+      );
 
       return {
         month: new Date(yearNumber, i, 1).toLocaleDateString("en-US", {
